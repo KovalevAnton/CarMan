@@ -8,3 +8,4 @@ export const emit = emitter.emit;
 export const NAVIGATE_WELCOME = "NAVIGATE_WELCOME";
 export const NAVIGATE_SIGNIN = "NAVIGATE_SIGNIN";
 export const NAVIGATE_CHAT_LIST = "NAVIGATE_CHAT_LIST";
+export const NAVIGATE_MAP = "NAVIGATE_MAP";

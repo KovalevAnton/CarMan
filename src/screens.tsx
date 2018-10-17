@@ -8,11 +8,12 @@ import configureStore from "./store/configureStore";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import Chat from "./components/Chat";
 import ChatList from "./components/ChatList";
+import Map from "./components/Map";
 
 const store = configureStore({});
 
 export function registerScreens(Navigation) {
-  Navigation.registerComponent("MobileDemo", () => () => (
+  Navigation.registerComponent("carMan", () => () => (
     <Provider store={store}>
       <App />
     </Provider>
@@ -40,6 +41,11 @@ export function registerScreens(Navigation) {
   Navigation.registerComponent("Chat", () => () => (
     <Provider store={store}>
       <Chat />
+    </Provider>
+  ));
+  Navigation.registerComponent("Map", () => () => (
+    <Provider store={store}>
+      <Map />
     </Provider>
   ));
   Navigation.registerComponent("ChatList", () => () => (

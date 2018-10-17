@@ -41,11 +41,6 @@ export default class Header extends React.Component<IProps> {
         );
     };
 }
-//  should add   
-//   borderColor: #fff;
-//   shadowColor: #000;
-//   shadowOpacity: 0.2;
-//   shadowRadius: 5;
 const HeaderWrapper = styled(View)`
   display: flex;
   flexDirection: column;
