@@ -14,20 +14,9 @@ registerScreens(Navigation);
 Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
     root: {
-      stack: {
-        options: {
-          topBar: {
-            visible: false,
-          }
-        },
-        id: "carMan",
-        children: [
-          {
-            component: {
-              name: "carMan"
-            }
-          }
-        ],
+      component: {
+        id: "root",
+        name: "carMan"
       }
     }
   });

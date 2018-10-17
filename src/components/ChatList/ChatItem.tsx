@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
+import { Avatar } from "../Avatar";
 import styled from "styled-components";
 import moment from "moment";
 
@@ -10,9 +11,12 @@ interface IProps {
   name: string;
   lastMessageText: string;
   lastMessageAuthor: string;
+  chatColor: string;
+  srcImg: string;
   id: number;
   lastMessageTimestamp: number;
   setActiveChatAndGetMessages: () => void;
+  navigateToChat: any;
 }
 export const ChatListItem = ({
   name,
@@ -21,17 +25,19 @@ export const ChatListItem = ({
   lastMessageText,
   lastMessageAuthor,
   lastMessageTimestamp,
+  chatColor,
+  navigateToChat,
+  srcImg
 }: IProps) => {
   return (
     <ChatListItemWrapper
       onPress={() => {
         setActiveChatAndGetMessages()
+        navigateToChat()
       }}
     >
       <AvatarSide>
-        <Avatar>
-          <Text>Avatar</Text>
-        </Avatar>
+        <Avatar name={name} srcImg={srcImg} chatColor={chatColor} />
       </AvatarSide>
       <LastMessageArea>
         <ChatName>{name}</ChatName>
@@ -54,7 +60,11 @@ const ChatListItemWrapper = styled(TouchableOpacity)`
   width: 100%;
   display: flex;
   flexDirection: row;
-  padding: 10px;
+  padding: 0 10px 10px 0px;
+  backgroundColor: #fff;
+  &:active {
+    backgroundColor: #fff;
+  }
 `;
 
 const AvatarSide = styled(View)`
@@ -65,29 +75,15 @@ const AvatarSide = styled(View)`
   justifyContent: center;
 `;
 
-const Avatar = styled(View)`
-  height: 85%;
-  width: 75%;
-  backgroundColor: #fff;
-  borderRadius: 50;
-  borderWidth: 2;
-  borderColor: #fff;
-  display: flex;
-  alignItems: center;
-  shadowColor: #000;
-  justifyContent: center;
-  shadowOpacity: 0.2;
-  shadowRadius: 5;
-`;
-
 const LastMessageArea = styled(View)`
   width: 55%;
   height: 100%;
-  padding: 10px;
+  paddingTop: 20px;
+  paddingLeft:5px;
 `;
 
 const ChatName = styled(Text)`
-  fontWeight: 700;
+  fontWeight: 500;
   fontSize: 18px;
 `;
 
@@ -113,5 +109,7 @@ const Timestamp = styled(Text)`
   fontSize: 12px;
   color: ${GRAY_COLOR};
   textAlign: right;
-  paddingTop: 10px;
+  paddingTop: 20px;
+  paddingRight: 10px;
 `;
+

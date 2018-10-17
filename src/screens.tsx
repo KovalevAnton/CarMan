@@ -7,7 +7,10 @@ import SignUp from "./components/Auth/SignUp";
 import configureStore from "./store/configureStore";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import Chat from "./components/Chat";
+import Header from "./components/Header";
 import ChatList from "./components/ChatList";
+import ChatMenu from "./components/ChatMenu";
+import ProfileSettings from "./components/ProfileSettings";
 import Map from "./components/Map";
 
 const store = configureStore({});
@@ -43,14 +46,29 @@ export function registerScreens(Navigation) {
       <Chat />
     </Provider>
   ));
-  Navigation.registerComponent("Map", () => () => (
+  Navigation.registerComponent("Header", () => () => (
     <Provider store={store}>
-      <Map />
+      <Header />
     </Provider>
   ));
   Navigation.registerComponent("ChatList", () => () => (
     <Provider store={store}>
       <ChatList />
+    </Provider>
+  ));
+  Navigation.registerComponent("Map", () => () => (
+    <Provider store={store}>
+      <Map />
+    </Provider>
+  ));
+  Navigation.registerComponent("ChatMenu", () => () => (
+    <Provider store={store}>
+      <ChatMenu />
+    </Provider>
+  ));
+  Navigation.registerComponent("ProfileSettings", () => () => (
+    <Provider store={store}>
+      <ProfileSettings />
     </Provider>
   ));
 }

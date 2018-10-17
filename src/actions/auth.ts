@@ -24,8 +24,16 @@ export const checkAuth = () => async dispatch => {
   const user = JSON.parse(auth);
   if (user && user.token) {
     goHome();
+    return dispatch({
+      type: AUTH_USER,
+      payload: { token: 'token', name: "anton", email: "qqq@mail.com" }
+    });
   } else {
     goWelcome();
+    return dispatch({
+      type: AUTH_USER,
+      payload: { token: 'token', name: "anton", email: "qqq@mail.com" }
+    });
   }
 };
 
@@ -64,6 +72,7 @@ export const login = ({ email, password }) => async dispatch => {
 export const logout = () => dispatch => {
   setAuth({ token: "", userId: "" });
   dispatch({ type: DEAUTH_USER });
+  goToAuth();
 };
 
 export const signUp = ({ username, email, password }) => async dispatch => {

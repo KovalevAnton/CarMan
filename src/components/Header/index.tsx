@@ -1,53 +1,63 @@
 import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
-import { Navigation } from "react-native-navigation";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styled from "styled-components";
-
-import { GRAY_COLOR } from "../../helpers/styleConstants";
+import { Avatar } from "../Avatar";
 import { SOFT_BLUE_COLOR } from "../../helpers/styleConstants";
 
 interface IProps {
     title: string;
+    subTitle: string | null;
     width: string;
-    backButton: () => void
+    chatColor: string;
+    leftIconName: string;
+    rightIconName: string | null;
+    isAvatarVisible: boolean | null;
+    rightIconFunction: () => void  | null;
+    leftIconFunction: () => void;
 }
 export default class Header extends React.Component<IProps> {
     constructor(props) {
         super(props);
     }
     public render() {
-        const { title, width, backButton } = this.props
+        const { title, width, chatColor, leftIconName,
+            rightIconFunction, leftIconFunction, subTitle,
+            rightIconName, isAvatarVisible } = this.props
         return (
             <HeaderWrapper style={{ width }}>
                 <Overlay />
                 <Head>
-                    <TouchableOpacity>
+                    <TouchableOpacity style={{ width: '15%' }}>
                         <Icon.Button
-                            onPress={backButton}
-                            name={title === 'Chats' ? "align-left" : "arrow-left"}
+                            onPress={() => leftIconFunction()}
+                            name={leftIconName}
                             backgroundColor="#fff"
                             color={SOFT_BLUE_COLOR} />
                     </TouchableOpacity>
                     <Title>
                         <Text style={{ fontSize: 22, fontWeight: "500", }}>{title}</Text>
-                        {title !== 'Chats' ? <Text style={{ fontSize: 12, fontWeight: "300", }}>Last seen recently</Text> : null}
+                        {subTitle && <Text style={{ fontSize: 12, fontWeight: "300", }}>{subTitle}</Text>}
                     </Title>
-                    <TouchableOpacity>
-                        <Icon.Button name="user" backgroundColor="transparent" color={SOFT_BLUE_COLOR} style={{}} />
+                    <TouchableOpacity style={{ width: "15%", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {isAvatarVisible ? <Avatar name={title} size="small" chatColor={chatColor} /> :
+                            <Icon.Button name={rightIconName} backgroundColor="transparent" color={SOFT_BLUE_COLOR} style={{ marginRight: 0 }}
+                                onPress={rightIconFunction} />}
                     </TouchableOpacity>
                 </Head>
             </HeaderWrapper>
         );
     };
 }
+
 const HeaderWrapper = styled(View)`
   display: flex;
-  flexDirection: column;
-  borderBottomWidth: 0.3;
-  borderColor: ${GRAY_COLOR};
-  height: 90px;
   justifyContent: center;
+  flexDirection: column;
+  borderBottomWidth: 3;
+  borderColor: rgba(0,0,0,0.05);
+  height: 90px;
+  backgroundColor: #fff;
 `;
 
 const Overlay = styled(View)`
@@ -61,12 +71,12 @@ const Head = styled(View)`
   flexDirection: row;
   textAlign: center;
   alignItems: center;
-  justifyContent: center;
+  justifyContent: space-between;
 `;
 
 const Title = styled(View)`
   color: #000;
-  width: 75%;
+  width: 70%;
   display: flex;
   flexDirection: column;
   alignItems: center;
