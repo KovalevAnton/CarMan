@@ -19,7 +19,7 @@ export const Header = styled(View)`
   align-items: center;
 `;
 export const Body = styled(View)`
-  height: 70%;
+  height: 87%;
   justify-content: center;
   align-items: center;
 `;

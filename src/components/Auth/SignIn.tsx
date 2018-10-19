@@ -6,15 +6,15 @@ import {
   Easing,
   KeyboardAvoidingView
 } from "react-native";
-import { goHome } from "../../navigation/navigation";
+import { goHome, goToChatList } from "../../navigation/navigation";
 import { login } from "../../actions/auth";
-
+import ChatMenu from '../ChatMenu'
+import Header from '../Header'
 import Input from "../CommonUIElements/Input";
 import Button from "../CommonUIElements/Button";
 import Link from "../CommonUIElements/Link";
 import { Navigation } from "react-native-navigation";
 import {
-  Header,
   Title,
   Annotation,
   Body,
@@ -34,6 +34,8 @@ interface IState {
   password: string;
   email: string;
   error: { email: string; password: string };
+  isMenuOpen: boolean;
+  animated: any;
 }
 class SignIn extends React.Component<IProps, IState> {
   constructor(props) {
@@ -42,21 +44,54 @@ class SignIn extends React.Component<IProps, IState> {
       xPosition: new Animated.Value(300),
       password: "",
       email: "",
-      error: { email: "", password: "" }
+      error: { email: "", password: "" },
+      isMenuOpen: false,
+      animated: new Animated.Value(0),
     };
   }
+
+  public showChatMenu = () => {
+    this.setState({ isMenuOpen: true })
+    Animated.timing(this.state.animated, {
+      toValue: 1,
+      duration: 500,
+    }).start();
+  };
+
+  public closeChatMenu = () => {
+    Animated.timing(this.state.animated, {
+      toValue: 0,
+      duration: 500,
+    }).start(() => this.setState({ isMenuOpen: false }));
+  };
+
 
   public render() {
     return (
       <Animated.View
         style={{ width, transform: [{ translateX: this.state.xPosition }] }}
       >
+        <ChatMenu
+          width={width}
+          closeMenu={this.closeChatMenu}
+          isMenuOpen={this.state.isMenuOpen}
+          animated={this.state.animated}
+          chatMenuItems={
+            [{ title: "Map", handler: () => goHome() },
+            { title: "Chatlist", handler: () => goToChatList() },
+            { title: "SignIn", handler: this.closeChatMenu }]
+          }
+        />
         <KeyboardAvoidingView behavior="padding">
-          <Header>
-            <Title>SIGN IN</Title>
-            <Annotation>Company name</Annotation>
-          </Header>
+          <Header
+            title="Sign In"
+            width={width}
+            leftIconName="align-left"
+            leftIconFunction={() => this.showChatMenu()}
+          />
           <Body>
+            <Title>SIGN IN</Title>
+            <Annotation style={{marginBottom: 10}}>CarMan</Annotation>
             <Input
               placeholder="Email"
               onChangeText={email => this.setState({ email })}
@@ -106,7 +141,7 @@ class SignIn extends React.Component<IProps, IState> {
             />
           </Body>
         </KeyboardAvoidingView>
-      </Animated.View>
+      </Animated.View >
     );
   }
 

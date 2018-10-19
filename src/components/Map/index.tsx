@@ -6,6 +6,7 @@ import MapView from "react-native-maps";
 import { checkAuth } from "../../actions/auth";
 import styled from "styled-components";
 import { Navigation } from "react-native-navigation";
+import { goToChatList, goToSignIn } from "../../navigation/navigation";
 import { getMessages, setActiveChat } from "../../actions/chat";
 import { logout } from "../../actions/auth";
 import ChatMenu from "../ChatMenu";
@@ -65,10 +66,18 @@ class Map extends React.Component<IProps, IState> {
                     closeMenu={this.closeChatMenu}
                     isMenuOpen={this.state.isMenuOpen}
                     animated={this.state.animated}
-                    chatMenuItems={[{ title: "Chats", handler: this.closeChatMenu }, { title: "Logout", handler: this.props.logout }]}
+                    chatMenuItems={this.props.auth.token ? [
+                        { title: "Map", handler: this.closeChatMenu },
+                        { title: "Chatlist", handler: () => goToChatList() },
+                        { title: "Logout", handler: this.props.logout }]
+                        :
+                        [{ title: "Map", handler: this.closeChatMenu },
+                        { title: "Chatlist", handler: () => goToChatList() },
+                        { title: "SignIn", handler: () => goToSignIn() }]
+                    }
                 />
                 <Header
-                    title="Chats"
+                    title="Map"
                     leftIconFunction={this.showChatMenu}
                     rightIconFunction={() =>
                         Navigation.push("Map", {

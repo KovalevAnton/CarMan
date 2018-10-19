@@ -4,7 +4,9 @@ import {
   NAVIGATE_WELCOME,
   NAVIGATE_SIGNIN,
   NAVIGATE_CHAT_LIST,
-  NAVIGATE_MAP
+  NAVIGATE_MAP,
+  NAVIGATE_SIGN_IN,
+  NAVIGATE_SIGN_UP
 } from "../helpers/eventBus";
 
 on(NAVIGATE_WELCOME, () =>
@@ -64,6 +66,27 @@ on(NAVIGATE_MAP, () =>
           {
             component: {
               name: "Map",
+              options: {
+                topBar: {
+                  visible: false,
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  })
+);
+on(NAVIGATE_SIGN_IN, () =>
+  Navigation.setRoot({
+    root: {
+      stack: {
+        id: "SignIn",
+        children: [
+          {
+            component: {
+              name: "SignIn",
               options: {
                 topBar: {
                   visible: false,

@@ -50,7 +50,7 @@ class ChatMenu extends React.Component<IProps> {
                 }}>
                     <ChatMenuHeader
                         onPress={() =>
-                            Navigation.push("ChatList", {
+                            Navigation.push("Map", {
                                 component: {
                                     name: 'ProfileSettings',
                                     options: {

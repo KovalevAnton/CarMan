@@ -8,6 +8,7 @@ import { getMessages, setActiveChat } from "../../actions/chat";
 import { Navigation } from "react-native-navigation";
 import ChatMenu from "../ChatMenu";
 import Header from "../Header";
+import { goToChatList, goToSignIn, goHome } from "../../navigation/navigation";
 
 const { width } = Dimensions.get('window')
 interface IProps {
@@ -70,7 +71,15 @@ class ChatList extends React.Component<IProps, IState> {
           closeMenu={this.closeChatMenu}
           isMenuOpen={this.state.isMenuOpen}
           animated={this.state.animated}
-          chatMenuItems={[{ title: "Chats", handler: this.closeChatMenu }, { title: "Logout", handler: this.props.logout }]}
+          chatMenuItems={this.props.auth.token ?
+            [{ title: "Map", handler: () => goHome() },
+            { title: "Chatlist", handler: this.closeChatMenu },
+            { title: "Logout", handler: this.props.logout }]
+            :
+            [{ title: "Map", handler: () => goHome() },
+            { title: "Chatlist", handler: this.closeChatMenu },
+            { title: "SignIn", handler: () => goToSignIn() }]
+          }
         />
         <ChatListWrapper width={width}>
           <Header

@@ -72,7 +72,7 @@ export const login = ({ email, password }) => async dispatch => {
 export const logout = () => dispatch => {
   setAuth({ token: "", userId: "" });
   dispatch({ type: DEAUTH_USER });
-  goToAuth();
+  goHome();
 };
 
 export const signUp = ({ username, email, password }) => async dispatch => {

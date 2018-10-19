@@ -35,7 +35,7 @@ class ForgotPassword extends React.Component<IProps, IState> {
       <ForgotPasswordView behavior="padding">
         <Header>
           <Title>FORGOT PASSWORD</Title>
-          <Annotation>Company name</Annotation>
+          <Annotation>CarMan</Annotation>
         </Header>
         <Body>
           <ValidatedInput
