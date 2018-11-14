@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>carmanserver</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<style>
+		* {
+			box-sizing: border-box;
+			font: 20px Helvetica, Arial;
+		}
+
+		button {
+			background: rgb(130, 224, 255);
+			border: none;
+			padding: 10px;
+			margin: 5px;
+		}
+
+		#messages {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		#messages li {
+			padding: 5px 10px;
+		}
+
+		#messages li:nth-child(odd) {
+			background: #eee;
+		}
+	</style>
+	<div id='login-form'>
+		<div><input id="email" placeholder="email" /></div>
+		<div><input id="name" placeholder="name" /></div>
+		<div><input id="password" type="password" placeholder="password" /></div>
+		<button id="login">Login</button><button id="register">Register</button>
+	</div>
+	<div id="chat" style="display:none;">
+		<div id="chat-list" style="width:20%;float: left;">
+			<button id="logout">logout</button>
+			<ul id="chats"></ul>
+			<div><input id="chat-name" placeholder="chat-name" style="width: 162px;" /></div>
+			<button id="add-chat">Add Chat</button>
+		</div>
+		<div id="chat-form" style="width:60%;float: left;height: 100vh;position: relative;">
+			<ul id="messages"></ul>
+
+			<div style="position: absolute;bottom: 0px;">
+				<input id="m" autocomplete="off" /><button id="send-message">Send</button>
+			</div>
+		</div>
+		<div id="chat-list" style="width:20%;float: left;">
+			<ul id="participants"></ul>
+			<button id="add-users">Add Users</button>
+			<div id="user-search" style="display:none;">
+				<div><input id="search" style="width: 162px;" /></div>
+				<button id="search-btn">Search</button>
+				<button id="close-search">Close</button>
+				<ul id="users"></ul>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+
+	<script>
+		$(() => {
+			$('#login').click(onLogin)
+			$('#register').click(onRegister)
+			$('#add-chat').click(onAddChat)
+			$('#send-message').click(sendMessage)
+			$('#logout').click(logout)
+			$('#chats').click(onSelectChat)
+			$('#add-users').click(openSearch)
+			$('#close-search').click(closeSearch)
+			$('#search-btn').click(onSearch)
+			$('#users').dblclick(onAddUser)
+
+			onStart()
+
+			let token = null
+			let chatId = null
+			let socket = null
+			let searchUsers = null
+			let activeChat = null
+
+			function onLogin() {
+				$.ajax({
+					url: '/auth/login',
+					method: 'POST',
+					data: JSON.stringify({
+						email: $('#email').val(),
+						password: $('#password').val(),
+					})
+				})
+					.then(response => {
+						console.log('logged in', response)
+						token = response.token
+						localStorage.setItem('CHAT_TOKEN', token)
+						loggedIn()
+					}, e => alert('cannot login: ' + JSON.stringify(e)))
+			}
+			function onRegister() {
+				$.ajax({
+					url: '/auth/register',
+					method: 'POST',
+					data: JSON.stringify({
+						email: $('#email').val(),
+						name: $('#name').val(),
+						password: $('#password').val(),
+					})
+				})
+					.then(response => {
+						console.log('registered: ', response)
+						alert('new user is register: ' + JSON.stringify(response.user.name))
+						token = response.token
+						localStorage.setItem('CHAT_TOKEN', token)
+						loggedIn()
+					}, e => alert('cannot register: ' + JSON.stringify(e)))
+			}
+			function onStart() {
+				const oldToken = localStorage.getItem('CHAT_TOKEN')
+				if (oldToken) {
+					$.ajax({
+						url: '/auth/check',
+						method: 'POST',
+						headers: { 'authorization': oldToken },
+					})
+						.then(response => {
+							token = response.token
+							localStorage.setItem('CHAT_TOKEN', token)
+							loggedIn()
+						}, e => console.log('old token is invalid: ' + token))
+				}
+			}
+			function logout() {
+				$('#login-form').show()
+				$('#chat').hide()
+				token = null
+				localStorage.setItem('CHAT_TOKEN', token)
+			}
+
+			function loggedIn() {
+				$('#login-form').hide()
+				$('#chat').show()
+				connect()
+				loadChats()
+			}
+
+			function onAddChat() {
+				const name = $('#chat-name').val()
+				if (name) {
+					$.ajax({
+						url: '/chat',
+						method: 'POST',
+						data: JSON.stringify({ name }),
+						headers: { 'authorization': token },
+					})
+						.then(chat => {
+							console.log('new chat : ', chat)
+							loadChats()
+						}, e => alert('cannot get chats: ' + JSON.stringify(e)))
+				}
+			}
+			function onSelectChat(e) {
+				const newChatId = e.target.id
+				if (newChatId && newChatId !== chatId) {
+					chatId = newChatId
+					loadMessages(chatId)
+					loadChat(chatId)
+				}
+			}
+			function loadChats() {
+				$.ajax({
+					url: '/chat',
+					method: 'GET',
+					headers: { 'authorization': token },
+				})
+					.then(chats => {
+						console.log('chats: ', chats)
+						$('#chats').empty()
+						for (let chat of chats) {
+							if (chat.chatId) {
+								$('#chats').append($(`<li id=${chat.chatId}>${chat.name}</il>`))
+							}
+						}
+						chatId = chatId || chats.length > 0 ? chats[0].chatId : null
+						loadMessages(chatId)
+						loadChat(chatId)
+					}, e => alert('cannot get chats: ' + JSON.stringify(e)))
+			}
+			function loadMessages(chatId) {
+				if (chatId) {
+					$.ajax({
+						url: '/messages/' + chatId,
+						method: 'GET',
+						headers: { 'authorization': token },
+					})
+						.then(messages => {
+							console.log('messages: ', messages)
+							$('#messages').empty()
+							if (messages && messages.length > 0) {
+								for (let message of messages) {
+									$('#messages').append($('<li>').text(message.text))
+								}
+							}
+						}, e => alert('cannot get messages: ' + JSON.stringify(e)))
+				}
+			}
+
+			function sendMessage() {
+				socket && socket.emit('message', JSON.stringify({
+					chatId,
+					text: $('#m').val()
+				}))
+				$('#m').val('')
+			}
+			function onMessage(data) {
+				try {
+					const msg = typeof data === 'string' ? JSON.parse(data) : data
+					if (msg.chatId === chatId) {
+						$('#messages').append($('<li>').text(msg.text))
+					}
+				} catch (e) {
+					console.log('cannot parse input message: ', data)
+				}
+			}
+
+			function connect() {
+				socket = io.connect('/', {
+					query: { token: token }
+				})
+				socket.on('message', onMessage)
+			}
+
+			function openSearch() {
+				$('#add-users').hide()
+				$('#user-search').show()
+			}
+			function closeSearch() {
+				$('#add-users').show()
+				$('#user-search').hide()
+			}
+			function loadChat(chatId) {
+				if (chatId) {
+					$.ajax({
+						url: '/chat/' + chatId,
+						headers: { 'authorization': token },
+					})
+						.then(chat => {
+							activeChat = chat
+							$('#participants').empty()
+							for (let user of chat.users || []) {
+								if (user._id) {
+									$('#participants').append($(`<li id=${user._id}>${user.name}</il>`))
+								}
+							}
+						}, e => alert('cannot load chat: ' + JSON.stringify(e)))
+				}
+			}
+			function onSearch() {
+				const text = $('#search').val()
+				if (text) {
+					$.ajax({
+						url: '/users/search/' + text,
+						headers: { 'authorization': token },
+					})
+						.then(users => {
+							$('#users').empty()
+							searchUsers = users
+							for (let user of users) {
+								if (user._id) {
+									$('#users').append($(`<li id=${user._id}>${user.name}</il>`))
+								}
+							}
+						}, e => alert('cannot search users: ' + JSON.stringify(e)))
+				}
+			}
+			function onAddUser(e) {
+				const userId = e.target.id
+				const user = _.find(searchUsers, { _id: userId })
+				if (user && activeChat) {
+					$.ajax({
+						url: '/chat/addUser',
+						method: 'POST',
+						data: JSON.stringify({ user, chat: activeChat }),
+						headers: { 'authorization': token },
+					})
+						.then(users => {
+							console.log('user is added: ', users)
+							loadChat(chatId)
+							closeSearch()
+						}, e => alert('cannot search users: ' + JSON.stringify(e)))
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>

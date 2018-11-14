@@ -1,0 +1,8 @@
+{
+  "name": "carmanserver",
+  "alias": "carmanserver.xyz",
+  "env": {
+    "DATABASE_URL": "@db-url"
+  },
+  "public": true
+}
