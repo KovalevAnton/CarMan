@@ -5,10 +5,11 @@ const fs = require('fs');
 const path = require('path');
 const auth = require('./auth')
 const chat = require('./chat')
+console.log("BEGIN!")
 
 const document = path.join(__dirname, 'main.html')
 const html = fs.readFileSync(document)
-
+console.log("START!")
 const server = micro(
   cors(
     router(
@@ -43,7 +44,7 @@ const server = micro(
           micro.send(res, 200, response)
         } catch (e) {
           console.error('register error: ', e)
-          micro.send(res, 400, { error: 'incorrect params' })
+          micro.send(res, 400, { error: e + 'incorrect params', })
         }
       }),
       post('/auth/changeSettings', async (req, res) => {
@@ -144,7 +145,7 @@ const server = micro(
     )
   )
 )
-
+console.log("FINISH!")
 chat.init(server)
 
 server.listen(4000, () => console.log('Listening on localhost:4000'))

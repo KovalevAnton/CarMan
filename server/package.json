@@ -7,7 +7,7 @@
     "test": "mocha ./*.spec.js --delay",
     "start": "node .",
     "dev": "export DATABASE_URL='mongodb://localhost:27017/test'; node .",
-    "deploy": "now rm carmanserver -y; now; now alias"
+    "deploy": "now rm carmanserver -y; now"
   },
   "keywords": [],
   "author": "",

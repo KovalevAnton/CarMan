@@ -8,6 +8,8 @@ import {
   CHANGE_PASSWORD,
   SIGN_UP_ERROR,
   CHANGE_USER_SETTINGS,
+  UPLOAD_PROGRESS,
+  UPLOAD_END
 } from "../constants/actions";
 import { setAuth, doJsonRequest, doJsonAuthRequest } from "./helper";
 import {
@@ -35,7 +37,14 @@ export const checkAuth = () => async dispatch => {
       goHome();
       dispatch({
         type: AUTH_USER,
-        payload: { token, name: user.name, email: user.email, srcAvatar: user.srcAvatar }
+        payload: { token, name: user.name, email: user.email, srcAvatar: user.srcAvatar, id: user._id }
+      });
+      dispatch({
+        type: UPLOAD_PROGRESS,
+        payload: 0
+      });
+      dispatch({
+        type: UPLOAD_END
       });
     } catch (err) {
       goToAuth();

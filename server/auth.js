@@ -51,7 +51,7 @@ async function login(credentials) {
 async function register(request) {
   const { email, name, password } = request
   if (!email || !name || !password) {
-    return Promise.reject('invalid params')
+    return Promise.reject('invalid params', request)
   }
   const db = await database.db()
   const response = await db.collection(USERS).insertOne({

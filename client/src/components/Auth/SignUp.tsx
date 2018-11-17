@@ -39,7 +39,7 @@ class SignUp extends React.Component<IProps, IState> {
   public handleSignUp() {
     if (this.isFormValid()) {
       this.props.signUp({
-        username: this.state.username,
+        name: this.state.username,
         email: this.state.email,
         password: this.state.password
       });
@@ -56,7 +56,7 @@ class SignUp extends React.Component<IProps, IState> {
       <SignUpView behavior="padding">
         <Header>
           <Title>SIGN UP</Title>
-          <Annotation>CarMan</Annotation>
+          <Annotation>Secret chat</Annotation>
         </Header>
         <Body>
           <ValidatedInput
