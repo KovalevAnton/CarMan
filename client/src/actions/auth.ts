@@ -21,7 +21,7 @@ import {
 } from "./endpoinds";
 import { AsyncStorage } from "react-native";
 import { AUTH } from "../constants/storage";
-import { goHome, goToAuth, goWelcome } from "../navigation/navigation";
+import { goToMap, goToSignIn, goWelcome } from "../navigation/navigation";
 
 export const checkAuth = () => async dispatch => {
   const storage = await AsyncStorage.getItem(AUTH);
@@ -34,11 +34,11 @@ export const checkAuth = () => async dispatch => {
         headers: { authorization: auth.token }
       });
       const { token, user } = resp
-      goHome();
       dispatch({
         type: AUTH_USER,
         payload: { token, name: user.name, email: user.email, srcAvatar: user.srcAvatar, id: user._id }
       });
+      goToMap();
       dispatch({
         type: UPLOAD_PROGRESS,
         payload: 0
@@ -47,8 +47,8 @@ export const checkAuth = () => async dispatch => {
         type: UPLOAD_END
       });
     } catch (err) {
-      goToAuth();
       dispatch(setAuthError("Enter login and password"));
+      goWelcome();
     }
   } else {
     goWelcome();
@@ -90,7 +90,7 @@ export const login = ({ email, password }) => async dispatch => {
 export const logout = () => dispatch => {
   setAuth({ token: "", userId: "" });
   dispatch({ type: DEAUTH_USER });
-  goToAuth();
+  goToMap();
 };
 
 export const signUp = ({ name, email, password }) => async dispatch => {
@@ -105,7 +105,7 @@ export const signUp = ({ name, email, password }) => async dispatch => {
       type: SIGN_UP_USER,
       payload: { token: resp.token, userId: resp._id }
     });
-    goHome();
+    goToMap();
   } catch (e) {
     dispatch(setSignUpError("Incorrect username or password"));
   }
@@ -122,7 +122,7 @@ export const remindPassword = email => async (dispatch, getStore) => {
       type: REMIND_PASSWORD,
       payload: email
     });
-    goToAuth();
+    goToSignIn();
   } catch (e) {
     dispatch(setRemindPasswordError("No such email registered, try again"));
   }

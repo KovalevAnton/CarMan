@@ -4,9 +4,9 @@ import { KeyboardAvoidingView } from "react-native";
 import styled from "styled-components";
 import Header from "../Header";
 import { Navigation } from "react-native-navigation";
-import { MessageInput } from "./MessageInput";
+import MessageInput from "./MessageInput";
 import { MessagesList } from "./MessagesList";
-import { goToAuth, goHome } from "../../navigation/navigation";
+import { goToSignIn, goToMap } from "../../navigation/navigation";
 import { sendMessage } from "../../actions/chat";
 
 interface IProps {
@@ -21,7 +21,7 @@ interface IProps {
 class Chat extends React.PureComponent<IProps> {
   public componentWillReceiveProps(nextProps) {
     if (!nextProps.auth.authenticated) {
-      goToAuth();
+      goToSignIn();
     }
   }
 

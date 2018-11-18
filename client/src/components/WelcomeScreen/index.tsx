@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity
 } from "react-native";
-import { goHome } from "../../navigation/navigation";
+import { goToMap } from "../../navigation/navigation";
 import SignIn from "../Auth/SignIn";
 import styled from "styled-components";
 
@@ -51,7 +51,7 @@ export default class Welcome extends Component {
             ])}
             onMomentumScrollEnd={() => {
               if (position.__getValue() > 2) {
-                goHome();
+                goToMap();
               }
             }}
             scrollEventThrottle={16}
@@ -114,7 +114,7 @@ export default class Welcome extends Component {
         </View>
         <View>
           <TouchableOpacity
-            onPress={goHome}
+            onPress={goToMap}
             style={{ padding: 50, alignItems: "center" }}
           >
             <SkipButtonText>Skip</SkipButtonText>

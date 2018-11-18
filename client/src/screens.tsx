@@ -1,5 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
+import { AppState } from 'react-native';
 import App from "./components/App";
 import Welcome from "./components/WelcomeScreen";
 import SignIn from "./components/Auth/SignIn";
@@ -7,13 +8,32 @@ import SignUp from "./components/Auth/SignUp";
 import configureStore from "./store/configureStore";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import Chat from "./components/Chat";
-import Header from "./components/Header";
 import ChatList from "./components/ChatList";
-import ChatMenu from "./components/ChatMenu";
-import ProfileSettings from "./components/ProfileSettings";
 import Map from "./components/Map";
+import ProfileSettings from "./components/ProfileSettings";
+import AddChat from "./components/AddChat";
+import ChatSettings from "./components/ChatSettings";
+import { FOREGROUND, BACKGROUND, INACTIVE } from "./constants/appState";
 
 const store = configureStore({});
+
+const handleAppStateChange = (nextAppState) => {
+  switch (nextAppState) {
+    case 'active':
+      store.dispatch({ type: FOREGROUND })
+      break;
+    case 'background':
+      store.dispatch({ type: BACKGROUND })
+      break;
+    case 'inactive':
+      store.dispatch({ type: INACTIVE });
+      break;
+    default:
+      return;
+  }
+};
+
+AppState.addEventListener('change', handleAppStateChange);
 
 export function registerScreens(Navigation) {
   Navigation.registerComponent("carMan", () => () => (
@@ -50,7 +70,7 @@ export function registerScreens(Navigation) {
     <Provider store={store}>
       <Header />
     </Provider>
-  ));
+  )); 
   Navigation.registerComponent("ChatList", () => () => (
     <Provider store={store}>
       <ChatList />
@@ -61,14 +81,19 @@ export function registerScreens(Navigation) {
       <Map />
     </Provider>
   ));
-  Navigation.registerComponent("ChatMenu", () => () => (
+  Navigation.registerComponent("AddChat", () => () => (
     <Provider store={store}>
-      <ChatMenu />
+      <AddChat />
     </Provider>
   ));
   Navigation.registerComponent("ProfileSettings", () => () => (
     <Provider store={store}>
       <ProfileSettings />
+    </Provider>
+  ));
+  Navigation.registerComponent("ChatSettings", () => () => (
+    <Provider store={store}>
+      <ChatSettings />
     </Provider>
   ));
 }

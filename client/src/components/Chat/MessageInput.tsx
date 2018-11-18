@@ -1,59 +1,149 @@
 import React from "react";
-import { View, TextInput, Button } from "react-native";
+import { connect } from "react-redux";
+import { View, TextInput, Image, Dimensions, ScrollView } from "react-native";
+import _ from 'lodash'
+import { SOFT_BLUE_COLOR, WHITE_COLOR } from "../../helpers/styleConstants";
+import Icon from 'react-native-vector-icons/FontAwesome5';
+// import ImagePicker from 'react-native-image-crop-picker';
 import styled from "styled-components";
+import { deletePhotoInMessage, deleteAllPhotoInMessageLocaly } from '../../actions/chat'
+
+const { height } = Dimensions.get('window') // it's for IphoneX
 
 interface IProps {
-  handleSendMessage: (value) => void;
+  handleSendMessage: (textInput) => void;
+  uploadPhotoInMessage: (imageUrl) => void;
+  deletePhotoInMessage: (imageUrl) => void;
+  deleteAllPhotoInMessageLocaly: () => void;
   chatId: string;
+  imagesInCurrentMessage: object
 }
 interface IState {
-  value: string;
+  textInput: string;
 }
-export class MessageInput extends React.Component<IProps, IState> {
+class MessageInput extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      value: ""
+      textInput: ""
     };
     this.handleSending = this.handleSending.bind(this);
   }
+
   public handleSending(message) {
     this.props.handleSendMessage(message);
-    this.setState({ value: "" });
+    this.props.deleteAllPhotoInMessageLocaly();
+    this.setState({ textInput: "" });
   }
+
+  // public getPhotos = () => {
+  //   ImagePicker.openPicker({
+  //     width: 300,
+  //     height: 400,
+  //     cropping: true
+  //   }).then(image => {
+  //     this.props.uploadPhotoInMessage(image)
+  //   }
+  //   );
+  // }
+
   public render() {
-    const { value } = this.state
+    const { textInput } = this.state
+    const { chat } = this.props
     return (
       <MessageInputView>
+        <Icon
+          style={{ marginLeft: 12, marginRight: 12 }}
+          size={22}
+          name="microphone"
+          backgroundColor={WHITE_COLOR}
+          color="#f5775f" />
         <View style={{ flex: 4 }}>
           <TextInput
+            onSubmitEditing={() => this.handleSending({text: textInput, links: chat.imagesInCurrentMessage })}
             onChangeText={text => {
-              this.setState({ value: text });
+              this.setState({ textInput: text });
             }}
-            value={value}
-            style={{ backgroundColor: "transparent", fontSize: 24 }}
+            value={textInput}
+            returnKeyType="send"
+            returnKeyLabel="Send"
+            placeholder="Your message"
+            style={{ backgroundColor: "transparent", fontSize: 18, margin: 0, }}
           />
         </View>
-        <View style={{ flex: 1 }}>
-          <Button
-            onPress={() => this.handleSending(value)}
-            title="Send"
-            color="rgb(0,122,255)"
-            accessibilityLabel="Send message"
-          />
-        </View>
+        <Icon
+          size={22}
+          name="grin"
+          backgroundColor={WHITE_COLOR}
+          color={SOFT_BLUE_COLOR} />
+        <Icon
+          // onPress={() => {
+          //   this.getPhotos()
+          // }}
+          style={{ marginLeft: 12, marginRight: 12 }}
+          size={22}
+          name="paperclip"
+          color={SOFT_BLUE_COLOR} />
+        {/* <UploadPhotoWrap horizontal={true}>
+          {_.map(chat.imagesInCurrentMessage, imageUrl => (
+            <View>
+              <Image
+                style={{ overflow: "hidden", width: 130, height: 80, borderWidth: 0.5, borderRadius: 10, 
+                marginBottom: 5, marginTop: 10, marginRight: 10, backgroundColor: `${WHITE_COLOR}`, borderColor: `${SOFT_BLUE_COLOR}` }}
+                source={{ uri: imageUrl }}
+              />
+              <Icon
+              onPress={() => {
+                this.props.deletePhotoInMessage(imageUrl)
+              }}
+                solid
+                style={{ overflow: "hidden", backgroundColor: `${WHITE_COLOR}`, borderRadius: 11, top: 0, right: 0, position: 'absolute' }}
+                size={22}
+                name="times-circle"
+                backgroundColor={WHITE_COLOR}
+                color={SOFT_BLUE_COLOR} />
+            </View>
+          ))
+          }
+        </UploadPhotoWrap> */}
       </MessageInputView>
     );
   }
 }
 
+const mapDispatchToProps = {
+  // uploadPhotoInMessage,
+  deletePhotoInMessage,
+  deleteAllPhotoInMessageLocaly
+};
+
+const mapStateToProps = state => ({ auth: state.auth, chat: state.chat });
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MessageInput);
+
+
 const MessageInputView = styled(View)`
-  flex-direction: row;
-  width: 100%;
-  padding: 4px;
-  align-items: center;
-  justify-content: center;
-  border-width: 1;
-  border-color: #888;
-  background-color: #fff;
-`;
+    flex-direction: row
+    padding: 4px;
+    margin: 10px;
+    marginBottom: ${height > 800 ? "30px" : "10px"}
+    align-items: center;
+    justify-content: center;
+    borderWidth: 1;
+    borderColor: #888;
+    backgroundColor: #d6efef;
+    borderRadius: 5px;
+    borderColor: ${WHITE_COLOR};
+    min-height: 50px;
+  `;
+
+const UploadPhotoWrap = styled(ScrollView)`
+    flex-direction: row;
+    position: absolute; 
+    bottom: 50; 
+    right: 0;
+    width: 100%;
+  `;

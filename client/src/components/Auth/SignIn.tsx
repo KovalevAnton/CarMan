@@ -6,7 +6,7 @@ import {
   Easing,
   KeyboardAvoidingView
 } from "react-native";
-import { goHome, goToChatList } from "../../navigation/navigation";
+import { goToMap, goToChatList } from "../../navigation/navigation";
 import { login } from "../../actions/auth";
 import ChatMenu from '../ChatMenu'
 import Header from '../Header'
@@ -77,7 +77,7 @@ class SignIn extends React.Component<IProps, IState> {
           isMenuOpen={this.state.isMenuOpen}
           animated={this.state.animated}
           chatMenuItems={
-            [{ title: "Map", handler: () => goHome() },
+            [{ title: "Map", handler: () => goToMap() },
             { title: "Chatlist", handler: () => goToChatList() },
             { title: "SignIn", handler: this.closeChatMenu }]
           }
@@ -155,7 +155,7 @@ class SignIn extends React.Component<IProps, IState> {
 
   public componentWillReceiveProps(nextProps) {
     if (nextProps.auth.authenticated) {
-      goHome();
+      goToMap();
     }
   }
 

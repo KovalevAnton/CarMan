@@ -2,7 +2,6 @@ import { Navigation } from "react-native-navigation";
 import {
   on,
   NAVIGATE_WELCOME,
-  NAVIGATE_SIGNIN,
   NAVIGATE_CHAT_LIST,
   NAVIGATE_MAP,
   NAVIGATE_SIGN_IN,
@@ -19,6 +18,7 @@ on(NAVIGATE_WELCOME, () =>
     }
   })
 );
+
 on(NAVIGATE_CHAT_LIST, () => {
   Navigation.setRoot({
     root: {
@@ -41,22 +41,6 @@ on(NAVIGATE_CHAT_LIST, () => {
   });
 });
 
-on(NAVIGATE_SIGNIN, () =>
-  Navigation.setRoot({
-    root: {
-      stack: {
-        id: "SignIn",
-        children: [
-          {
-            component: {
-              name: "SignIn"
-            }
-          }
-        ]
-      }
-    }
-  })
-);
 on(NAVIGATE_MAP, () =>
   Navigation.setRoot({
     root: {
@@ -78,6 +62,7 @@ on(NAVIGATE_MAP, () =>
     }
   })
 );
+
 on(NAVIGATE_SIGN_IN, () =>
   Navigation.setRoot({
     root: {

@@ -2,13 +2,13 @@ import React from "react";
 import { connect } from "react-redux";
 import { TouchableOpacity, View, Text, Animated } from "react-native";
 import { Navigation } from "react-native-navigation";
+import { BLACK_COLOR, WHITE_COLOR } from "../../helpers/styleConstants";
 import styled from "styled-components";
 import _ from "lodash";
 import { Avatar } from "../Avatar";
 
 interface IProps {
     chat: any;
-    activeChatColor: string;
     size: string;
     chatColor: string;
     name: string;
@@ -24,7 +24,6 @@ class ChatMenu extends React.Component<IProps> {
 
     public render() {
         const { auth, chatMenuItems, width, closeMenu, isMenuOpen, animated } = this.props
-
         return (
             <Animated.View
                 style={{
@@ -62,8 +61,9 @@ class ChatMenu extends React.Component<IProps> {
                             })}>
                         <AvatarWrap>
                             <Avatar
+                                srcImg={auth.srcAvatar}
                                 size="middle"
-                                chatColor="#996699"
+                                avatarColor="#996699"
                                 name={auth.name} />
                         </AvatarWrap>
                         <AvatarUsername>{auth.name}</AvatarUsername>
@@ -99,7 +99,7 @@ const ChatMenuView = styled(Animated.View)`
   position: absolute;
   top: 0;
   left: 0;
-  backgroundColor: #fff;
+  backgroundColor: ${WHITE_COLOR};
 `;
 
 const ChatMenuHeader = styled(TouchableOpacity)`
@@ -120,7 +120,7 @@ const AvatarWrap = styled(View)`
 
 const AvatarUsername = styled(Text)`
     fontSize: 18;
-    color: #000;
+    color: ${BLACK_COLOR};
     fontWeight: 500
 `;
 const ChatMenuBody = styled(View)`
@@ -132,7 +132,7 @@ const ChatMenuBody = styled(View)`
 `;
 
 const ChatMenuItem = styled(TouchableOpacity)`
-  backgroundColor: #fff;
+  backgroundColor: ${WHITE_COLOR};
   display: flex;
   justifyContent: center;
   paddingLeft: 20px;
