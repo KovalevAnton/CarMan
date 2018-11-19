@@ -10,6 +10,7 @@ import { WHITE_COLOR, SOFT_BLUE_COLOR, BLACK_COLOR } from "../../helpers/styleCo
 import { CHAT_LIST_TIMESTAMP } from "../../constants/storage";
 import { getMessages, setActiveChat, getChats, refreshChatList } from "../../actions/chat";
 import { Navigation } from "react-native-navigation";
+import { goToSignIn, goToMap } from "../../navigation/navigation";
 import ChatMenu from "../ChatMenu";
 import Header from "../Header";
 import AppearedButton from "../CommonUIElements/AppearedButton";
@@ -98,7 +99,15 @@ class ChatList extends React.Component<IProps, IState> {
           closeMenu={this.closeChatMenu}
           isMenuOpen={this.state.isMenuOpen}
           animated={this.state.animated}
-          chatMenuItems={[{ title: "Chats", handler: this.closeChatMenu }, { title: "Logout", handler: this.props.logout }]}
+          chatMenuItems={this.props.auth.token ? [
+            { title: "Map", handler: () => goToMap() },
+            { title: "Chatlist", handler: this.closeChatMenu },
+            { title: "Logout", handler: this.props.logout }]
+            :
+            [{ title: "Map", handler: () => goToMap() },
+            { title: "Chatlist", handler: this.closeChatMenu },
+            { title: "SignIn", handler: () => goToSignIn() }]
+          }
         />
         <ChatListWrapper width={width}>
           <Header
@@ -156,7 +165,7 @@ class ChatList extends React.Component<IProps, IState> {
             ))}
           </ScrollView>
           <AppearedButton
-            isButtonVisible={this.state.isAddChatButtonVisible}            
+            isButtonVisible={this.state.isAddChatButtonVisible}
             buttonHandler={() => {
               Navigation.push("ChatList", {
                 component: {

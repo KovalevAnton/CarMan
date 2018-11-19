@@ -13,8 +13,8 @@ interface IProps {
   chat: any;
   auth: any;
   sendMessage: (chatId, text) => void;
-  activeChatId: string;
-  activeChatName: string;
+  chatId: string;
+  chatName: string;
   width: string;
   chatColor: string;
 }
@@ -30,16 +30,16 @@ class Chat extends React.PureComponent<IProps> {
     return (
       <ChatView style={{ width: width }}>
         <Header
-          title={chat.activeChatName}
+          title={chat.activeChat.chatName}
           subTitle="last seen recently"
           width={width}
           isAvatarVisible={true}
           leftIconFunction={() => Navigation.popToRoot("ChatList")}
-          chatColor={chat.activeChatColor}
+          chatColor={chat.activeChat.chatColor}
           leftIconName="arrow-left" />
         <MessagesList messages={chat.messages} userEmail={auth.email} />
         <MessageInput
-          handleSendMessage={(message) => this.props.sendMessage(chat.activeChatId, message)}
+          handleSendMessage={(message) => this.props.sendMessage(chat.activeChat.chatId, message)}
         />
       </ChatView>
     );
