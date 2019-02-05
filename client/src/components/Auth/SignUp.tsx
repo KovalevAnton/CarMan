@@ -86,10 +86,7 @@ class SignUp extends React.Component<IProps, IState> {
           />
           <ValidatedInput
             placeholder="Password"
-            onChangeText={password => {
-              this.setState({ password })
-              console.log(password)
-            }}
+            onChangeText={password => this.setState({ password })}
             value={this.state.password}
             rule={validate.password}
           />

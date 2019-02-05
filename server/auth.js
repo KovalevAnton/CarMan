@@ -8,10 +8,15 @@ const USERS = 'users'
 
 function generateToken(user) {
   const { _id, name, email } = user
-  return sign({
-    exp: Math.floor(Date.now() / 1000) + (8 * 60 * 60),
-    _id, name, email,
-  }, secret)
+  return sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 8 * 60 * 60,
+      _id,
+      name,
+      email,
+    },
+    secret
+  )
 }
 
 function decodeToken(token) {
@@ -23,7 +28,7 @@ function generatePasswordHash(password) {
 }
 
 function checkPassword(candidate, hash) {
-  return compareSync(hash, candidate)
+  return compareSync(candidate, hash)
 }
 
 function userInfo(user) {
@@ -41,7 +46,7 @@ async function login(credentials) {
   if (!user) {
     return Promise.reject('invalid params')
   }
-  if (checkPassword(user.password, password)) {
+  if (checkPassword(password, user.password)) {
     return { token: generateToken(user), user: userInfo(user) }
   } else {
     return Promise.reject('invalid username or password')
@@ -55,7 +60,11 @@ async function register(request) {
   }
   const db = await database.db()
   const response = await db.collection(USERS).insertOne({
-    _id: shortid.generate(), email, role, name, password: generatePasswordHash(password)
+    _id: shortid.generate(),
+    email,
+    role,
+    name,
+    password: generatePasswordHash(password),
   })
   const userId = _.get(response, 'insertedId')
   if (!userId) {
@@ -72,8 +81,7 @@ async function changeSettings(userId, request) {
   }
   console.log(userId)
   const db = await database.db()
-  const user = await db.collection(USERS).updateOne({ _id: userId },
-    { $set: { name, email, srcAvatar } })
+  const user = await db.collection(USERS).updateOne({ _id: userId }, { $set: { name, email, srcAvatar } })
   if (!user) {
     return Promise.reject('invalid params')
   }
@@ -101,7 +109,10 @@ async function findUsers({ user, text }) {
     return Promise.reject('invalid token')
   }
   const db = await database.db()
-  const users = await db.collection(USERS).find({ name: { $regex: text, $options: 'i' } }).toArray()
+  const users = await db
+    .collection(USERS)
+    .find({ name: { $regex: text, $options: 'i' } })
+    .toArray()
   const results = _.filter(users, item => item._id !== user._id)
   return results
 }
@@ -112,5 +123,5 @@ module.exports = {
   check,
   decodeToken,
   findUsers,
-  changeSettings
+  changeSettings,
 }
