@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const auth = require('./auth')
 const chat = require('./chat')
+const job = require('./job')
 console.log("BEGIN!")
 
 const document = path.join(__dirname, 'main.html')
@@ -66,7 +67,7 @@ const server = micro(
         try {
           const token = req.headers['authorization']
           const user = auth.decodeToken(token)
-          const response = await auth.findUsers({user, text:req.params.text})
+          const response = await auth.findUsers({ user, text: req.params.text })
           micro.send(res, 200, response)
         } catch (e) {
           console.error('search error: ', e)
@@ -100,7 +101,7 @@ const server = micro(
           const token = req.headers['authorization']
           const user = auth.decodeToken(token)
           const body = await micro.json(req)
-          const response = await chat.createChat({ user, request: body })
+          const response = await chat.createChat({ user, connectedUser: body })
           micro.send(res, 200, response);
         } catch (e) {
           console.error('create chat error: ', e)
@@ -129,6 +130,31 @@ const server = micro(
         } catch (e) {
           console.error('create chat error: ', e)
           micro.send(res, 400, { error: 'create chat error' })
+        }
+      }),
+      post('/job', async (req, res) => {
+        try {
+          const token = req.headers['authorization']
+          const user = auth.decodeToken(token)
+          if (user) {
+            const body = await micro.json(req)
+            const response = await job.createJob({ user: body.user, job: body.job })
+            micro.send(res, 200, response);
+          }
+        } catch (e) {
+          console.error('create job error: ', e)
+          micro.send(res, 400, { error: 'create job error' })
+        }
+      }),
+      get('/job', async (req, res) => {
+        try {
+          const token = req.headers['authorization']
+          const user = auth.decodeToken(token)
+          const response = await job.getJobs(user)
+          micro.send(res, 200, response);
+        } catch (e) {
+          console.error('get chats error: ', e)
+          micro.send(res, 400, { error: 'get chats error' })
         }
       }),
       get('/messages/:chatId', async (req, res) => {

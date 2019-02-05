@@ -5,7 +5,8 @@ import {
   NAVIGATE_CHAT_LIST,
   NAVIGATE_MAP,
   NAVIGATE_SIGN_IN,
-  NAVIGATE_SIGN_UP
+  NAVIGATE_SIGN_UP,
+  NAVIGATE_JOBS
 } from "../helpers/eventBus";
 
 on(NAVIGATE_WELCOME, () =>
@@ -63,6 +64,27 @@ on(NAVIGATE_MAP, () =>
   })
 );
 
+on(NAVIGATE_JOBS, () =>
+  Navigation.setRoot({
+    root: {
+      stack: {
+        id: "Jobs",
+        children: [
+          {
+            component: {
+              name: "Jobs",
+              options: {
+                topBar: {
+                  visible: false,
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  })
+);
 on(NAVIGATE_SIGN_IN, () =>
   Navigation.setRoot({
     root: {

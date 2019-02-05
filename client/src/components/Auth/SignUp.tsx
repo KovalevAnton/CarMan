@@ -1,39 +1,51 @@
-import React from "react";
-import { KeyboardAvoidingView } from "react-native";
-import styled from "styled-components";
-import Button from "../CommonUIElements/Button";
-import ValidatedInput from "./ValidatedInput";
-import { Header, Title, Annotation, Body, ErrorText } from "./styled";
-import { signUp } from "../../actions/auth";
-import { connect } from "react-redux";
-import { validate } from "../../helpers/validator";
+import React from 'react'
+import { KeyboardAvoidingView, Switch, Text } from 'react-native'
+import styled from 'styled-components'
+import Button from '../CommonUIElements/Button'
+import ValidatedInput from './ValidatedInput'
+import { Header, Title, Annotation, Body, ErrorText } from './styled'
+import { signUp } from '../../actions/auth'
+import { connect } from 'react-redux'
+import { validate } from '../../helpers/validator'
 
 interface ISignUpData {
-  username: string;
-  email: string;
-  password: string;
+  username: string
+  email: string
+  password: string
 }
 interface IProps {
-  signUp: (data: ISignUpData) => void;
-  auth: any;
+  signUp: (data: ISignUpData) => void
+  auth: any
 }
 
 interface IState {
-  password: string;
-  username: string;
-  email: string;
-  error: { username: string; password: string; email: string };
+  password: string
+  username: string
+  email: string
+  role: string
+  roleSwitch: boolean
+  error: { username: string; password: string; email: string }
 }
 class SignUp extends React.Component<IProps, IState> {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      username: "",
-      password: "",
-      email: "",
-      error: { username: "", email: "", password: "" }
-    };
-    this.handleSignUp = this.handleSignUp.bind(this);
+      username: '',
+      password: '',
+      email: '',
+      error: { username: '', email: '', password: '' },
+      role: 'customer',
+      roleSwitch: false,
+    }
+    this.handleSignUp = this.handleSignUp.bind(this)
+  }
+
+  public toggleRole(role) {
+    if (role === 'customer') {
+      this.setState({ role: 'auto', roleSwitch: true })
+    } else {
+      this.setState({ role: 'customer', roleSwitch: false })
+    }
   }
 
   public handleSignUp() {
@@ -41,15 +53,16 @@ class SignUp extends React.Component<IProps, IState> {
       this.props.signUp({
         name: this.state.username,
         email: this.state.email,
-        password: this.state.password
-      });
+        password: this.state.password,
+        role: this.state.role,
+      })
     }
   }
 
   public isFormValid = () =>
     validate.username(this.state.username).result &&
     validate.email(this.state.email).result &&
-    validate.password(this.state.password).result;
+    validate.password(this.state.password).result
 
   public render() {
     return (
@@ -73,19 +86,22 @@ class SignUp extends React.Component<IProps, IState> {
           />
           <ValidatedInput
             placeholder="Password"
-            onChangeText={password => this.setState({ password })}
+            onChangeText={password => {
+              this.setState({ password })
+              console.log(password)
+            }}
             value={this.state.password}
             rule={validate.password}
           />
+          <Text>{this.state.role}</Text>
+          <Switch value={this.state.roleSwitch} onValueChange={() => this.toggleRole(this.state.role)} />
           <Button disabled={!this.isFormValid()} onPress={this.handleSignUp}>
             Sign Up
           </Button>
-          {this.props.auth.signUpError.length > 1 && (
-            <ErrorText> {this.props.auth.signUpError}</ErrorText>
-          )}
+          {this.props.auth.signUpError.length > 1 && <ErrorText> {this.props.auth.signUpError}</ErrorText>}
         </Body>
       </SignUpView>
-    );
+    )
   }
 }
 
@@ -93,15 +109,15 @@ const SignUpView = styled(KeyboardAvoidingView)`
   flex: 1;
   justify-content: center;
   align-items: center;
-`;
+`
 
 const mapDispatchToProps = {
-  signUp
-};
+  signUp,
+}
 
-const mapStateToProps = state => ({ auth: state.auth });
+const mapStateToProps = state => ({ auth: state.auth })
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SignUp);
+)(SignUp)

@@ -6,17 +6,19 @@ import { SOFT_BLUE_COLOR, WHITE_COLOR } from "../../helpers/styleConstants";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 // import ImagePicker from 'react-native-image-crop-picker';
 import styled from "styled-components";
-import { deletePhotoInMessage, deleteAllPhotoInMessageLocaly } from '../../actions/chat'
+// import * as Progress from 'react-native-progress';
+// import { uploadPhotoInMessage, deletePhotoInMessage, deleteAllPhotoInMessageLocaly } from '../../actions/chat'
 
 const { height } = Dimensions.get('window') // it's for IphoneX
 
 interface IProps {
   handleSendMessage: (textInput) => void;
-  uploadPhotoInMessage: (imageUrl) => void;
-  deletePhotoInMessage: (imageUrl) => void;
-  deleteAllPhotoInMessageLocaly: () => void;
+  // uploadPhotoInMessage: (imageUrl) => void;
+  // deletePhotoInMessage: (imageUrl) => void;
+  // deleteAllPhotoInMessageLocaly: () => void;
   chatId: string;
-  imagesInCurrentMessage: object
+  // imagesInCurrentMessage: object;
+  chat: object;
 }
 interface IState {
   textInput: string;
@@ -32,7 +34,7 @@ class MessageInput extends React.Component<IProps, IState> {
 
   public handleSending(message) {
     this.props.handleSendMessage(message);
-    this.props.deleteAllPhotoInMessageLocaly();
+    // this.props.deleteAllPhotoInMessageLocaly();
     this.setState({ textInput: "" });
   }
 
@@ -86,25 +88,26 @@ class MessageInput extends React.Component<IProps, IState> {
           color={SOFT_BLUE_COLOR} />
         {/* <UploadPhotoWrap horizontal={true}>
           {_.map(chat.imagesInCurrentMessage, imageUrl => (
-            <View>
-              <Image
-                style={{ overflow: "hidden", width: 130, height: 80, borderWidth: 0.5, borderRadius: 10, 
-                marginBottom: 5, marginTop: 10, marginRight: 10, backgroundColor: `${WHITE_COLOR}`, borderColor: `${SOFT_BLUE_COLOR}` }}
+            <MessageImageWrap>
+              <MessageImage
                 source={{ uri: imageUrl }}
               />
-              <Icon
-              onPress={() => {
-                this.props.deletePhotoInMessage(imageUrl)
-              }}
+              <CloseIcon
+                onPress={() => {
+                  this.props.deletePhotoInMessage(imageUrl)
+                }}
                 solid
-                style={{ overflow: "hidden", backgroundColor: `${WHITE_COLOR}`, borderRadius: 11, top: 0, right: 0, position: 'absolute' }}
                 size={22}
                 name="times-circle"
                 backgroundColor={WHITE_COLOR}
                 color={SOFT_BLUE_COLOR} />
-            </View>
+            </MessageImageWrap>
           ))
           }
+          {chat.uploadingPhotoInChat && <MessageImageProgress>
+            {chat.uploadingPhotoInChatProgress === 0 && <Progress.Circle color={SOFT_BLUE_COLOR} size={50} indeterminate={true} />}
+            {chat.uploadingPhotoInChatProgress !== 0 && <Progress.Pie color={SOFT_BLUE_COLOR} progress={chat.uploadingPhotoInChatProgress} size={50} />}
+          </MessageImageProgress>}
         </UploadPhotoWrap> */}
       </MessageInputView>
     );
@@ -113,8 +116,8 @@ class MessageInput extends React.Component<IProps, IState> {
 
 const mapDispatchToProps = {
   // uploadPhotoInMessage,
-  deletePhotoInMessage,
-  deleteAllPhotoInMessageLocaly
+  // deletePhotoInMessage,
+  // deleteAllPhotoInMessageLocaly
 };
 
 const mapStateToProps = state => ({ auth: state.auth, chat: state.chat });
@@ -126,19 +129,32 @@ export default connect(
 
 
 const MessageInputView = styled(View)`
-    flex-direction: row
+    flex-direction: row;
     padding: 4px;
     margin: 10px;
-    marginBottom: ${height > 800 ? "30px" : "10px"}
+    margin-bottom: ${height > 800 ? "30px" : "10px"};
     align-items: center;
     justify-content: center;
-    borderWidth: 1;
-    borderColor: #888;
-    backgroundColor: #d6efef;
-    borderRadius: 5px;
-    borderColor: ${WHITE_COLOR};
+    border-width: 1;
+    border-color: #888;
+    background-color: #d6efef;
+    border-radius: 5px;
+    border-color: ${WHITE_COLOR};
     min-height: 50px;
-  `;
+    `;
+
+// const MessageImage = styled(Image)`
+//     overflow: hidden; 
+//     width: 130; 
+//     height: 80; 
+//     border-width: 0.5; 
+//     border-radius: 10;
+//     margin-bottom: 5; 
+//     margin-top: 10; 
+//     margin-right: 10; 
+//     background-color: ${WHITE_COLOR}; 
+//     border-color: ${SOFT_BLUE_COLOR};
+//     `;
 
 const UploadPhotoWrap = styled(ScrollView)`
     flex-direction: row;
@@ -146,4 +162,31 @@ const UploadPhotoWrap = styled(ScrollView)`
     bottom: 50; 
     right: 0;
     width: 100%;
-  `;
+    `;
+
+// const MessageImageProgress = styled(View)`
+//       overflow: hidden; 
+//       width: 130; 
+//       height: 80;
+//       border-width: 0.5;
+//       border-radius: 10;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       margin-bottom: 5; 
+//       margin-top: 10;
+//       margin-right: 10; 
+//       background-color: ${WHITE_COLOR};
+//       border-color: ${SOFT_BLUE_COLOR}
+//       `;
+
+// const MessageImageWrap = styled(View)``;
+
+// const CloseIcon = styled(Icon)`
+//       overflow: hidden;
+//       backgroundColor: ${WHITE_COLOR};
+//       borderRadius: 11; 
+//       top: 0; 
+//       right: 0; 
+//       position: absolute
+//       `;

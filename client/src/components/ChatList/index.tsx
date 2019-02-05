@@ -11,9 +11,8 @@ import { CHAT_LIST_TIMESTAMP } from "../../constants/storage";
 import { getMessages, setActiveChat, getChats, refreshChatList } from "../../actions/chat";
 import { Navigation } from "react-native-navigation";
 import { goToSignIn, goToMap } from "../../navigation/navigation";
-import ChatMenu from "../ChatMenu";
+import Menu from "../Menu";
 import Header from "../Header";
-import AppearedButton from "../CommonUIElements/AppearedButton";
 import selector from "./selector";
 
 const { width } = Dimensions.get('window')
@@ -25,7 +24,7 @@ interface IProps {
   name: string;
   chatColor: string;
   chats: object;
-  chatMenuItems: object;
+  menuBodyItems: object;
   auth: object;
   lastChatsTimestamp: object;
   width: number;
@@ -39,10 +38,9 @@ interface IProps {
 
 interface IState {
   isMenuOpen: boolean;
-  isAddChatButtonVisible: boolean;
   refreshing: boolean;
   animated: any;
-  currentChatMenuScrollPosition: number;
+  currentMenuScrollPosition: number;
 }
 
 class ChatList extends React.Component<IProps, IState> {
@@ -51,13 +49,12 @@ class ChatList extends React.Component<IProps, IState> {
     this.state = {
       isMenuOpen: false,
       animated: new Animated.Value(0),
-      isAddChatButtonVisible: true,
-      currentChatMenuScrollPosition: 0,
+      currentMenuScrollPosition: 0,
       refreshing: false,
     };
   }
 
-  public showChatMenu = () => {
+  public showMenu = () => {
     this.setState({ isMenuOpen: true })
     Animated.timing(this.state.animated, {
       toValue: 1,
@@ -65,17 +62,7 @@ class ChatList extends React.Component<IProps, IState> {
     }).start();
   };
 
-  public toggleAddChatButton = (event) => {
-    const { currentChatMenuScrollPosition, isAddChatButtonVisible } = this.state
-    if (event.nativeEvent.contentOffset.y - currentChatMenuScrollPosition > 10) {
-      this.setState({ isAddChatButtonVisible: false })
-    } else {
-      this.setState({ isAddChatButtonVisible: true })
-    }
-    this.setState({ currentChatMenuScrollPosition: event.nativeEvent.contentOffset.y })
-  }
-
-  public closeChatMenu = () => {
+  public closeMenu = () => {
     Animated.timing(this.state.animated, {
       toValue: 0,
       duration: 500,
@@ -87,53 +74,38 @@ class ChatList extends React.Component<IProps, IState> {
     this.props.getMessages(chatProperties.chatId)
   }
 
-  // public resetActiveChat = () => {
-  //   this.props.setActiveChat(null, null, null)
-  // }
-
   public render() {
     return (
       <View>
-        <ChatMenu
+        <Menu
           width={width}
-          closeMenu={this.closeChatMenu}
+          closeMenu={this.closeMenu}
           isMenuOpen={this.state.isMenuOpen}
           animated={this.state.animated}
-          chatMenuItems={this.props.auth.token ? [
+          menuHeaderNavigationRoot='Chatlist'
+          menuBodyItems={this.props.auth.token ? [
             { title: "Map", handler: () => goToMap() },
-            { title: "Chatlist", handler: this.closeChatMenu },
+            { title: "Chatlist", handler: this.closeMenu },
             { title: "Logout", handler: this.props.logout }]
             :
             [{ title: "Map", handler: () => goToMap() },
-            { title: "Chatlist", handler: this.closeChatMenu },
+            { title: "Chatlist", handler: this.closeMenu },
             { title: "SignIn", handler: () => goToSignIn() }]
           }
         />
         <ChatListWrapper width={width}>
           <Header
             title="Chats"
-            leftIconFunction={this.showChatMenu}
-            rightIconFunction={() =>
-              Navigation.push("ChatList", {
-                component: {
-                  name: 'ProfileSettings',
-                  options: {
-                    topBar: {
-                      visible: false
-                    },
-                  }
-                }
-              })}
+            leftIconFunction={this.showMenu}
             leftIconName="align-left"
-            rightIconName="user" />
+          />
           <ScrollView
             refreshControl={
               <RefreshControl
                 refreshing={this.props.chat.refreshingChatList}
                 onRefresh={() => this.props.refreshChatList()}
               />
-            }
-            onScrollBeginDrag={(event) => this.toggleAddChatButton(event)}>
+            }>
             {_.map(this.props.sortedChats, chat => (
               <ChatListItem
                 navigateToChat={() =>
@@ -164,24 +136,6 @@ class ChatList extends React.Component<IProps, IState> {
               />
             ))}
           </ScrollView>
-          <AppearedButton
-            isButtonVisible={this.state.isAddChatButtonVisible}
-            buttonHandler={() => {
-              Navigation.push("ChatList", {
-                component: {
-                  name: 'AddChat',
-                  options: {
-                    topBar: {
-                      visible: false
-                    },
-                  }
-                }
-              })
-            }}
-            iconName="pen"
-            iconSize={22}
-            reverseAppear={true}
-          />
         </ChatListWrapper>
       </View >
     );

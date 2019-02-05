@@ -91,22 +91,21 @@ async function getChats(user) {
   return userChats
 }
 
-async function createChat({ user, request }) {
-  const { users, chatName } = request
+async function createChat({ user, connectedUser }) {
   const chatId = shortid.generate()
   const db = await database.db()
   await db.collection(USER_CHATS).insertOne({
-    chatId, chatName,
+    chatId, chatName: connectedUser,
     userId: user._id, userName: user.name
   })
-  if (_.get(users, 'length') > 0) {
-    for (let contact of users) {
-      await db.collection(USER_CHATS).insertOne({
-        chatId, chatName,
-        userId: contact._id, userName: contact.name
-      })
-    }
-  }
+  // if (_.get(users, 'length') > 0) {
+  //   for (let contact of users) {
+  //     await db.collection(USER_CHATS).insertOne({
+  //       chatId, chatName,
+  //       userId: contact._id, userName: contact.name
+  //     })
+  //   }
+  // }
   return getChat(chatId)
 }
 

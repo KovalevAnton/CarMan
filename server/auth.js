@@ -27,8 +27,8 @@ function checkPassword(candidate, hash) {
 }
 
 function userInfo(user) {
-  const { _id, name, email, srcAvatar } = user
-  return { _id, name, email, srcAvatar }
+  const { _id, name, email, srcAvatar, role } = user
+  return { _id, name, email, srcAvatar, role }
 }
 
 async function login(credentials) {
@@ -49,13 +49,13 @@ async function login(credentials) {
 }
 
 async function register(request) {
-  const { email, name, password } = request
-  if (!email || !name || !password) {
+  const { email, name, password, role } = request
+  if (!email || !name || !password || !role) {
     return Promise.reject('invalid params', request)
   }
   const db = await database.db()
   const response = await db.collection(USERS).insertOne({
-    _id: shortid.generate(), email, name, password: generatePasswordHash(password)
+    _id: shortid.generate(), email, role, name, password: generatePasswordHash(password)
   })
   const userId = _.get(response, 'insertedId')
   if (!userId) {

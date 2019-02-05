@@ -1,14 +1,17 @@
 import React from "react";
 import { connect } from "react-redux";
-import { View, Dimensions, Text, TouchableOpacity } from "react-native";
+import { View, Dimensions, Text, Modal, TouchableOpacity } from "react-native";
 import _ from 'lodash'
 import styled from "styled-components";
+// import ImagePicker from 'react-native-image-crop-picker';
 import Input from "../CommonUIElements/Input";
 import Button from "../CommonUIElements/Button";
 import Header from "../Header";
-import { saveProfileSettings } from '../../actions/auth'
+import { saveProfileSettings, changeUserPicture } from '../../actions/auth'
+// import * as Progress from 'react-native-progress';
 import { Avatar } from "../Avatar";
 import { Navigation } from "react-native-navigation";
+import { SOFT_BLUE_COLOR } from '../../helpers/styleConstants';
 import { goToSignIn } from "../../navigation/navigation";
 
 const { width } = Dimensions.get('window')
@@ -21,14 +24,16 @@ interface IProps {
   activeProfileSettingsName: string;
   chatColor: string;
   saveProfileSettings: ({ name, email, srcAvatar }) => void;
+  changeUserPicture: (image, user) => void;
+  srcAvatar: string;
 }
 
 interface IState {
   isProfileEdit: boolean
   name: string;
-  srcAvatar: string;
   email: string;
   error: object;
+  isUploadPhotoButtonVisible: boolean;
 }
 
 class ProfileSettings extends React.Component<IProps, IState> {
@@ -36,32 +41,57 @@ class ProfileSettings extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       name: props.auth.name,
-      srcAvatar: props.auth.srcAvatar,
       email: props.auth.email,
-      error: { name: "", srcAvatar: "", email: "" },
-      isProfileEdit: false
+      error: { name: "", email: "" },
+      isProfileEdit: false,
+      isUploadPhotoButtonVisible: false,
     };
   }
 
-  public saveProfileSettings() {
-    const { name, email, srcAvatar } = this.state
-    this.props.saveProfileSettings({ name, email, srcAvatar })
-    this.setState({ isProfileEdit: false })
-  }
+ public componentDidMount(){
+   console.log(this.props.componentId)
+  //  this.concatinate()
+ }
 
-  public componentWillReceiveProps(nextProps) {
-    if (!nextProps.auth.authenticated) {
-      goToSignIn();
+  public concatinate(value) {
+    let newValue = "";
+    const space = " ";
+    const pos = 0;
+    while (true) {
+      let foundPos = value.indexOf(space, pos);
+      if (foundPos === -1) {
+        console.log(newValue)
+        return newValue
+      }
+      newValue += value.substring(pos, foundPos)
+      pos = foundPos++;
     }
   }
 
+  public saveProfileSettings() {
+    const { name, email } = this.state
+    this.props.saveProfileSettings({ name, email, srcAvatar: this.props.auth.srcAvatar })
+    this.setState({ isProfileEdit: false })
+  }
+
+  // public getPhotos() {
+  //   const { name, email } = this.state
+  //   ImagePicker.openPicker({
+  //     width: 300,
+  //     height: 400,
+  //     cropping: true
+  //   }).then(image => {
+  //     this.props.changeUserPicture(image, { name, email })
+  //     this.setState({ isUploadPhotoButtonVisible: false })
+  //   })
+  // }
+
   public render() {
     const { chat, auth } = this.props
-    const { isProfileEdit } = this.state
+    const { isProfileEdit, isUploadPhotoButtonVisible } = this.state
     const profileSettingsItems = [
       { title: "Username", fieldName: 'name' },
       { title: "Email", fieldName: 'email' },
-      { title: "Avatar Source", fieldName: 'srcAvatar' },
     ]
     return (
       <ProfileSettingsWrap>
@@ -69,10 +99,13 @@ class ProfileSettings extends React.Component<IProps, IState> {
           title="Profile Settings"
           width={width}
           leftIconName="arrow-left"
-          leftIconFunction={() => Navigation.popToRoot("Map")}
-           />
+          leftIconFunction={() => Navigation.popToRoot()}
+          rightIconFunction={isProfileEdit ? () => this.saveProfileSettings() : () => this.setState({ isProfileEdit: true })}
+          rightIconName={isProfileEdit ? "check" : "pencil"}
+        />
         <ProfileSettingsView>
-          <AvatarSide>
+          <AvatarSide
+            onPress={() => this.setState({ isUploadPhotoButtonVisible: true })}>
             <Avatar
               srcImg={auth.srcAvatar}
               style={{ width: 100, height: 100, borderRadius: 100 }}
@@ -92,46 +125,78 @@ class ProfileSettings extends React.Component<IProps, IState> {
               <Text style={{ fontSize: 24, marginTop: 16, marginBottom: 16 }}>{item.title}: {this.state[item.fieldName] || 'Empty'}</Text>
             }
           </ProfileSettingsItem>))}
-          <Button
-            onPress={isProfileEdit ? () => this.saveProfileSettings() : () => this.setState({ isProfileEdit: true })}>
-            {isProfileEdit ? 'Save' : 'Edit'}
-          </Button>
         </ProfileSettingsView>
-      </ProfileSettingsWrap>
+        <View>
+          {/* buttons */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isUploadPhotoButtonVisible}>
+            <View
+              style={{ bottom: 0, position: "absolute", width: '95%', marginRight: 10 }}>
+              <Button
+                // onPress={() =>
+                //   this.getPhotos()
+                // }
+                style={{ width: '100%' }}>
+                Choose photo
+              </Button>
+              <Button style={{ width: '100%' }} onPress={() => this.setState({ isUploadPhotoButtonVisible: false })}>Cancel</Button>
+            </View>
+          </Modal>
+        </View>
+        {/* {auth.uploadingUserPhoto && <UploadSection>
+          {auth.uploadingUserPhoto && auth.uploadingUserPhotoProgress === 0 && <Progress.Circle color={SOFT_BLUE_COLOR} size={100} indeterminate={true} />}
+          {auth.uploadingUserPhotoProgress !== 0 && <Progress.Pie color={SOFT_BLUE_COLOR} progress={auth.uploadingUserPhotoProgress} size={100} />}
+        </UploadSection>} */}
+      </ProfileSettingsWrap >
     );
   }
 }
 
+const UploadSection = styled(View)`
+          display: flex; 
+          justify-content: center;
+          align-items: center; 
+          background-color: rgba(255, 255, 255, 0.7); 
+          position: absolute; 
+          top: 0; 
+          left: 0; 
+          right: 0;
+          bottom: 0;
+          `;
+
 const ProfileSettingsWrap = styled(View)`
         display: flex;
-        flexDirection: column;
+        flex-direction: column;
         height: 100%;
       `;
 
 const ProfileSettingsItem = styled(View)`
         display: flex;
-        flexDirection: column;
-        alignItems: center;
-        justifyContent: center;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       `;
 
 const ProfileSettingsView = styled(View)`
         display: flex;
-        flexDirection: column;
+        flex-direction: column;
         height: 100%;
-        alignItems: center;
+        align-items: center;
       `;
 
-const AvatarSide = styled(View)`
+const AvatarSide = styled(TouchableOpacity)`
         width: 100%;
         display: flex;
-        alignItems: center;
-        justifyContent: center;
+        align-items: center;
+        justify-content: center;
         margin: 15px 0;
       `;
 
 const mapDispatchToProps = {
-  saveProfileSettings
+  saveProfileSettings,
+  changeUserPicture
 };
 
 const mapStateToProps = state => ({ auth: state.auth, chat: state.chat });

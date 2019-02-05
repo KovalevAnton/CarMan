@@ -71,20 +71,20 @@ export default UIAppearedButton;
 const AppearedButtonWrap = styled(TouchableOpacity)`
         position: absolute;
         right: 20;
-        bottom: 20;
+        bottom: 100;
       `;
 
 const AppearedButton = styled(Animated.View)`
-        padding: ${props => (props.buttonText ? '10px' : '20px')}
+        padding: ${props => (props.buttonText ? '10px' : '20px')};
         position: absolute;
         right: 10;
-        bottom: 10;
-        backgroundColor: ${SOFT_BLUE_COLOR};
+        bottom: 100;
+        background-color: ${SOFT_BLUE_COLOR};
         border-radius: 50;
-        shadowRadius: 3; 
-        shadowOpacity: 0.2; 
-        shadowOffset: {width: 1, height: 1}; 
-        shadowColor: ${BLACK_COLOR};
-        flexDirection: row;
+        shadow-radius: 3; 
+        shadow-opacity: 0.2; 
+        shadow-offset: {width: 1, height: 1}; 
+        shadow-color: ${BLACK_COLOR};
+        flex-direction: row;
         display: flex;
       `;

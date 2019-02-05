@@ -10,9 +10,9 @@ import ForgotPassword from "./components/Auth/ForgotPassword";
 import Chat from "./components/Chat";
 import ChatList from "./components/ChatList";
 import Map from "./components/Map";
+import Jobs from "./components/Jobs";
+import AddJob from "./components/AddJob";
 import ProfileSettings from "./components/ProfileSettings";
-import AddChat from "./components/AddChat";
-import ChatSettings from "./components/ChatSettings";
 import { FOREGROUND, BACKGROUND, INACTIVE } from "./constants/appState";
 
 const store = configureStore({});
@@ -66,11 +66,6 @@ export function registerScreens(Navigation) {
       <Chat />
     </Provider>
   ));
-  Navigation.registerComponent("Header", () => () => (
-    <Provider store={store}>
-      <Header />
-    </Provider>
-  )); 
   Navigation.registerComponent("ChatList", () => () => (
     <Provider store={store}>
       <ChatList />
@@ -81,19 +76,19 @@ export function registerScreens(Navigation) {
       <Map />
     </Provider>
   ));
-  Navigation.registerComponent("AddChat", () => () => (
-    <Provider store={store}>
-      <AddChat />
-    </Provider>
-  ));
   Navigation.registerComponent("ProfileSettings", () => () => (
     <Provider store={store}>
       <ProfileSettings />
     </Provider>
   ));
-  Navigation.registerComponent("ChatSettings", () => () => (
+  Navigation.registerComponent("Jobs", () => () => (
     <Provider store={store}>
-      <ChatSettings />
+      <Jobs />
+    </Provider>
+  ));
+  Navigation.registerComponent("AddJob", () => () => (
+    <Provider store={store}>
+      <AddJob />
     </Provider>
   ));
 }

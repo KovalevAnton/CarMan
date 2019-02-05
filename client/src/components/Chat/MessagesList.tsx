@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { ScrollView } from "react-native";
+import { VirtualizedList } from 'react-native';
 import styled from "styled-components";
 import { Message } from "./Message";
 import { WHITE_COLOR } from "../../helpers/styleConstants";
@@ -8,34 +8,46 @@ import { WHITE_COLOR } from "../../helpers/styleConstants";
 interface IProps {
   userEmail: string;
   messages: object;
+  currentSelectedMessage: object;
 }
 export class MessagesList extends React.Component<IProps> {
-  public scrollToEnd = () => {
-    this.scrollView.scrollToEnd();
+
+  public componentDidUpdate(prevProps) {
+    if (prevProps.messages.length !== this.props.messages.length) {
+      this.scrollView.scrollToEnd();
+    }
   }
+
+  public MessagesItem = ({ item }) => {
+    const { userEmail } = this.props
+    return (<Message key={item._id} idx={item._id}
+      files={item.links}
+      text={item.text} isMyMessage={item.author.email === userEmail}
+      timestamp={item.timestamp} />
+    )
+  }
+
   public render() {
-    const { messages, userEmail } = this.props
+    const { messages } = this.props
+    console.log(messages)
     return (
-      <ScrollView
+      <VirtualizedList
+        // inverted
+        onScrollToIndexFailed={() => this.scrollToEnd()}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+        initialScrollIndex={0}
+        ref={(scrollView) => { this.scrollView = scrollView }}
         style={{
-          flex: 1,
-          padding: 20,
-          paddingTop: 0,
+          paddingRight: 20,
+          paddingLeft: 20,
           display: "flex",
           flexDirection: "column",
           backgroundColor: `${WHITE_COLOR}`
         }}
-        ref={(scrollView) => { this.scrollView = scrollView }}
-        onContentSizeChange={() => {
-          this.scrollToEnd()
-        }}>
-        {_.map(messages, message => (
-          <Message key={message._id} idx={message._id}
-            files={message.links}
-            text={message.text} isMyMessage={message.author.email === userEmail}
-            timestamp={message.timestamp} />
-        ))
-        }
-      </ScrollView >)
+        data={messages}
+        renderItem={this.MessagesItem}
+      />
+    )
   }
 }

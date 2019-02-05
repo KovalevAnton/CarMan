@@ -4,11 +4,11 @@ import {
   Dimensions,
   Animated,
   Easing,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
 import { goToMap, goToChatList } from "../../navigation/navigation";
 import { login } from "../../actions/auth";
-import ChatMenu from '../ChatMenu'
+import Menu from '../Menu'
 import Header from '../Header'
 import Input from "../CommonUIElements/Input";
 import Button from "../CommonUIElements/Button";
@@ -46,11 +46,11 @@ class SignIn extends React.Component<IProps, IState> {
       email: "",
       error: { email: "", password: "" },
       isMenuOpen: false,
-      animated: new Animated.Value(0),
+      animated: new Animated.Value(0)
     };
   }
 
-  public showChatMenu = () => {
+  public showMenu = () => {
     this.setState({ isMenuOpen: true })
     Animated.timing(this.state.animated, {
       toValue: 1,
@@ -58,28 +58,28 @@ class SignIn extends React.Component<IProps, IState> {
     }).start();
   };
 
-  public closeChatMenu = () => {
+  public closeMenu = () => {
     Animated.timing(this.state.animated, {
       toValue: 0,
       duration: 500,
     }).start(() => this.setState({ isMenuOpen: false }));
   };
 
-
   public render() {
     return (
       <Animated.View
         style={{ width, transform: [{ translateX: this.state.xPosition }] }}
       >
-        <ChatMenu
+        <Menu
           width={width}
-          closeMenu={this.closeChatMenu}
+          closeMenu={this.closeMenu}
           isMenuOpen={this.state.isMenuOpen}
           animated={this.state.animated}
-          chatMenuItems={
+          menuHeaderNavigationRoot='SignIn'
+          menuBodyItems={
             [{ title: "Map", handler: () => goToMap() },
             { title: "Chatlist", handler: () => goToChatList() },
-            { title: "SignIn", handler: this.closeChatMenu }]
+            { title: "SignIn", handler: this.closeMenu }]
           }
         />
         <KeyboardAvoidingView behavior="padding">
@@ -87,11 +87,11 @@ class SignIn extends React.Component<IProps, IState> {
             title="Sign In"
             width={width}
             leftIconName="align-left"
-            leftIconFunction={() => this.showChatMenu()}
+            leftIconFunction={() => this.showMenu()}
           />
           <Body>
             <Title>SIGN IN</Title>
-            <Annotation style={{marginBottom: 10}}>CarMan</Annotation>
+            <Annotation style={{ marginBottom: 10 }}>CarMan</Annotation>
             <Input
               placeholder="Email"
               onChangeText={email => this.setState({ email })}

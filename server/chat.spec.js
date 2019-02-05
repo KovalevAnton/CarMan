@@ -23,7 +23,7 @@ describe('chat', () => {
   it('should create new chat', async () => {
     const response = await chat.createChat({
       user: { _id: USER_ID },
-      request: { chatName: 'test' }
+      connectedUser: 'test'
     })
     expect(response.chatName).eql('test')
   })

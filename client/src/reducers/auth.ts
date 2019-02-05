@@ -5,7 +5,11 @@ import {
   SIGN_UP_ERROR,
   REMIND_PASSWORD_ERROR,
   SIGN_UP_USER,
-  CHANGE_USER_SETTINGS
+  CHANGE_USER_SETTINGS,
+  CLEAR_AUTH_ERRORS,
+  UPLOAD_USER_PHOTO_START,
+  UPLOAD_USER_PHOTO_PROGRESS,
+  UPLOAD_USER_PHOTO_END,
 } from "../constants/actions";
 import { BACKGROUND } from "../constants/appState";
 
@@ -15,7 +19,8 @@ const initialState = {
   signUpError: "",
   authenticated: false,
   remindPasswordError: "",
-  users: []
+  users: [],
+  isSearchBarActive: false
 };
 
 const auth = (state = initialState, action) => {
@@ -30,7 +35,7 @@ const auth = (state = initialState, action) => {
     };
     case AUTH_USER:
     case SIGN_UP_USER: {
-      const { token, name, email, srcAvatar, id } = action.payload;
+      const { token, name, email, srcAvatar, id, role } = action.payload;
       return {
         ...state,
         authenticated: true,
@@ -39,7 +44,8 @@ const auth = (state = initialState, action) => {
         name,
         email,
         srcAvatar,
-        id
+        id,
+        role
       };
     }
     case AUTH_ERROR: {
@@ -79,6 +85,15 @@ const auth = (state = initialState, action) => {
         email,
         srcAvatar
       };
+    }
+    case UPLOAD_USER_PHOTO_START: {
+      return { ...state, uploadingUserPhoto: true };
+    }
+    case UPLOAD_USER_PHOTO_END: {
+      return { ...state, uploadingUserPhoto: false, uploadingUserPhotoProgress: 0 };
+    }
+    case UPLOAD_USER_PHOTO_PROGRESS: {
+      return { ...state, uploadingUserPhotoProgress: action.payload };
     }
     default:
       return state;

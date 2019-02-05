@@ -1,23 +1,21 @@
 import React from "react";
 import styled from "styled-components";
 import { BLACK_COLOR, WHITE_COLOR, SOFT_BLUE_COLOR } from "../../helpers/styleConstants";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Dimensions } from "react-native";
 import _ from "lodash"
 import moment from "moment";
 
 import { MESSAGE_TIMESTAMP_FORMAT } from '../../helpers/constants'
 
-export const Message = ({ text, files, idx, isMyMessage, timestamp }) => {
+const { width } = Dimensions.get('window')
 
+export const Message = ({ text, files, idx, isMyMessage, timestamp }) => {
   return (
     <MessageWrapper isMyMessage={isMyMessage}>
-      {_.map(files, fileUrl => (<Image
-        style={{
-          overflow: "hidden", width: 130, height: 80, borderWidth: 0.5, borderRadius: 10,
-          marginBottom: 5, backgroundColor: `${WHITE_COLOR}`, borderColor: `${SOFT_BLUE_COLOR}`
-        }}
-        source={{ uri: fileUrl }}
-      />))}
+      {_.map(files, fileUrl => (
+        <MessageImage
+          source={{ uri: fileUrl }}
+        />))}
       <MessageText isMyMessage={isMyMessage}>{text}</MessageText>
       <DateText isMyMessage={isMyMessage}>
         {moment(timestamp).format(MESSAGE_TIMESTAMP_FORMAT)}
@@ -45,7 +43,7 @@ const MessageWrapper = styled(View).attrs({})`
 `;
 
 const MessageText = styled(Text)`
-  marginBottom: 3px;
+  margin-bottom: 3px;
   color: black;
   letter-spacing: 0.7px;
   text-align: ${(props: IMessageProps) =>
@@ -57,4 +55,15 @@ const DateText = styled(Text)`
   color: ${BLACK_COLOR};
   text-align: ${(props: IMessageProps) =>
     props.isMyMessage ? "right" : "left"};
+`;
+
+const MessageImage = styled(Image)`
+    overflow: hidden;
+    width: 280; 
+    height: 180; 
+    border-width: 0.5; 
+    border-radius: 10;
+    margin-bottom: 5; 
+    background-color: ${WHITE_COLOR};
+    border-color: ${SOFT_BLUE_COLOR};
 `;
