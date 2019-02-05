@@ -13,21 +13,22 @@ interface IProps {
     chatColor: string;
     name: string;
     width: string;
+    menuHeaderNavigationRoot: string;
     isMenuOpen: boolean;
-    chatMenuItems: object
+    menuBodyItems: object
     animated: object
     auth: object
     closeMenu: () => void
 }
 
-class ChatMenu extends React.Component<IProps> {
+class Menu extends React.Component<IProps> {
 
     public render() {
-        const { auth, chatMenuItems, width, closeMenu, isMenuOpen, animated } = this.props
+        const { auth, menuBodyItems, menuHeaderNavigationRoot, width, closeMenu, isMenuOpen, animated } = this.props
         return (
             <Animated.View
                 style={{
-                    width: width,
+                    width,
                     height: '100%',
                     position: 'absolute',
                     zIndex: 20,
@@ -37,7 +38,7 @@ class ChatMenu extends React.Component<IProps> {
             >
                 <Overlay
                     onPress={closeMenu} />
-                <ChatMenuView style={{
+                <MenuView style={{
                     transform: [{
                         translateX: animated.interpolate(
                             {
@@ -47,9 +48,9 @@ class ChatMenu extends React.Component<IProps> {
                         )
                     }]
                 }}>
-                    <ChatMenuHeader
+                    <MenuHeader
                         onPress={() =>
-                            Navigation.push("Map", {
+                            Navigation.push(menuHeaderNavigationRoot, {
                                 component: {
                                     name: 'ProfileSettings',
                                     options: {
@@ -67,15 +68,15 @@ class ChatMenu extends React.Component<IProps> {
                                 name={auth.name} />
                         </AvatarWrap>
                         <AvatarUsername>{auth.name}</AvatarUsername>
-                    </ChatMenuHeader>
-                    <ChatMenuBody>
-                        {_.map(chatMenuItems, item => (
-                            <ChatMenuItem onPress={() => item.handler()}>
-                                <ChatMenuTitle>{item.title}</ChatMenuTitle>
-                            </ChatMenuItem>
+                    </MenuHeader>
+                    <MenuBody>
+                        {_.map(menuBodyItems, item => (
+                            <MenuItem onPress={() => item.handler()}>
+                                <MenuTitle>{item.title}</MenuTitle>
+                            </MenuItem>
                         ))}
-                    </ChatMenuBody>
-                </ChatMenuView >
+                    </MenuBody>
+                </MenuView >
             </Animated.View>
         );
     }
@@ -84,66 +85,67 @@ class ChatMenu extends React.Component<IProps> {
 const Overlay = styled(TouchableOpacity)`
     top: 0;
     right: 0;
-    backgroundColor: rgba(0,0,0,0.8);
+    background-color: rgba(0,0,0,0.8);
     width: 100%;
     height: 100%;
     display: flex;
   `;
 
-const ChatMenuView = styled(Animated.View)`
-  display: flex;
-  flexDirection: column;
-  height: 100%;
-  width: 70%;
-  paddingTop: 20px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  backgroundColor: ${WHITE_COLOR};
+const MenuView = styled(Animated.View)`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 70%;
+    padding-top: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: ${WHITE_COLOR};
 `;
 
-const ChatMenuHeader = styled(TouchableOpacity)`
-  display: flex;
-  justifyContent: flex-start;
-  alignItems: center;
-  flexDirection: row;
-  borderBottomWidth: 3;
-  borderColor: rgba(0,0,0,0.05);
-  height: 70px;
-  padding: 0 10px;
-  width: 100%;
+const MenuHeader = styled(TouchableOpacity)`
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    border-bottom-width: 3;
+    border-color: rgba(0,0,0,0.05);
+    height: 70px;
+    padding: 0 10px;
+    width: 100%;
 `;
 
 const AvatarWrap = styled(View)`
     width: 70px;
+    padding: 5px;
 `;
 
 const AvatarUsername = styled(Text)`
-    fontSize: 18;
+    font-size: 18;
     color: ${BLACK_COLOR};
-    fontWeight: 500
+    font-weight: 500;
 `;
-const ChatMenuBody = styled(View)`
-  backgroundColor: #eee;
-  display: flex;
-  flexDirection: column;
-  borderColor: rgba(0,0,0,0.05);
-  height: 100%;
-`;
-
-const ChatMenuItem = styled(TouchableOpacity)`
-  backgroundColor: ${WHITE_COLOR};
-  display: flex;
-  justifyContent: center;
-  paddingLeft: 20px;
-  flexDirection: column;
-  borderColor: rgba(0,0,0,0.05);
-  height: 100px;
-  borderBottomWidth: 3;
+const MenuBody = styled(View)`
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    border-color: rgba(0,0,0,0.05);
+    height: 100%;
 `;
 
-const ChatMenuTitle = styled(Text)`
-    fontSize: 24px;
+const MenuItem = styled(TouchableOpacity)`
+    background-color: ${WHITE_COLOR};
+    display: flex;
+    justify-content: center;
+    padding-left: 20px;
+    flex-direction: column;
+    border-color: rgba(0,0,0,0.05);
+    height: 100px;
+    border-bottom-width: 3;
+`;
+
+const MenuTitle = styled(Text)`
+    font-size: 24px;
 `;
 
 const mapStateToProps = state => ({ auth: state.auth, chat: state.chat });
@@ -151,4 +153,4 @@ const mapStateToProps = state => ({ auth: state.auth, chat: state.chat });
 export default connect(
     mapStateToProps,
     null
-)(ChatMenu);
+)(Menu);
