@@ -7,21 +7,21 @@ import {
   REMIND_PASSWORD_ERROR,
   CHANGE_PASSWORD,
   SIGN_UP_ERROR,
-  CHANGE_USER_SETTINGS,
-  UPLOAD_USER_PHOTO_START,
-  UPLOAD_USER_PHOTO_PROGRESS,
-  UPLOAD_USER_PHOTO_END,
+  CHANGE_USER_SETTINGS
+  // UPLOAD_USER_PHOTO_START,
+  // UPLOAD_USER_PHOTO_PROGRESS,
+  // UPLOAD_USER_PHOTO_END,
 } from '../constants/actions'
 // import RNFetchBlob from 'rn-fetch-blob'
 import { setAuth, doJsonRequest, doJsonAuthRequest, getToken } from './helper'
 import {
   AUTH_URL,
-  AUTH_SOCIAL_URL,
+  // AUTH_SOCIAL_URL,
   SIGN_UP_URL,
   REMIND_PASSWORD_URL,
   AUTH_CHECK_URL,
-  CHANGE_USER_SETTINGS_URL,
-  UPLOAD_URL,
+  CHANGE_USER_SETTINGS_URL
+  // UPLOAD_URL,
 } from './endpoinds'
 import { AsyncStorage, Platform } from 'react-native'
 import { AUTH } from '../constants/storage'
@@ -39,7 +39,7 @@ export const checkAuth = () => async dispatch => {
       const resp = await doJsonRequest({
         url: AUTH_CHECK_URL,
         method: 'post',
-        headers: { authorization: auth.token },
+        headers: { authorization: auth.token }
       })
       const { token, user } = resp
       dispatch({
@@ -50,8 +50,8 @@ export const checkAuth = () => async dispatch => {
           email: user.email,
           srcAvatar: user.srcAvatar,
           id: user._id,
-          role: user.role,
-        },
+          role: user.role
+        }
       })
       goToMap()
     } catch (err) {
@@ -69,12 +69,12 @@ export const setAuthError = error => dispatch => {
 
 export const setSignUpError = error => ({
   type: SIGN_UP_ERROR,
-  payload: error,
+  payload: error
 })
 
 export const setRemindPasswordError = error => ({
   type: REMIND_PASSWORD_ERROR,
-  payload: error,
+  payload: error
 })
 
 export const login = ({ email, password }) => async dispatch => {
@@ -82,7 +82,7 @@ export const login = ({ email, password }) => async dispatch => {
     const resp = await doJsonRequest({
       url: AUTH_URL,
       method: 'post',
-      data: { email, password },
+      data: { email, password }
     })
     setAuth({ token: resp.token, userId: resp.user._id })
     return dispatch({
@@ -92,8 +92,8 @@ export const login = ({ email, password }) => async dispatch => {
         name: resp.user.name,
         email,
         srcAvatar: resp.user.srcAvatar,
-        role: resp.user.role,
-      },
+        role: resp.user.role
+      }
     })
   } catch (e) {
     console.log(e)
@@ -112,7 +112,7 @@ export const signUp = ({ name, email, password, role }) => async dispatch => {
     const resp = await doJsonRequest({
       url: SIGN_UP_URL,
       method: 'POST',
-      data: { name, email, password, role },
+      data: { name, email, password, role }
     })
     setAuth({ token: resp.token, userId: resp.user._id })
     dispatch({
@@ -122,8 +122,8 @@ export const signUp = ({ name, email, password, role }) => async dispatch => {
         token: resp.token,
         id: resp.user._id,
         name: resp.user.name,
-        email: resp.user.email,
-      },
+        email: resp.user.email
+      }
     })
     goToMap()
   } catch (e) {
@@ -136,11 +136,11 @@ export const remindPassword = email => async (dispatch, getStore) => {
     await doJsonAuthRequest({
       url: REMIND_PASSWORD_URL,
       method: 'post',
-      data: { email },
+      data: { email }
     })
     dispatch({
       type: REMIND_PASSWORD,
-      payload: email,
+      payload: email
     })
     goToSignIn()
   } catch (e) {
@@ -150,19 +150,23 @@ export const remindPassword = email => async (dispatch, getStore) => {
 
 export const changePassword = ({ password, oldPassword }) => ({
   type: CHANGE_PASSWORD,
-  payload: { password, oldPassword },
+  payload: { password, oldPassword }
 })
 
-export const saveProfileSettings = ({ name, email, srcAvatar }) => async dispatch => {
+export const saveProfileSettings = ({
+  name,
+  email,
+  srcAvatar
+}) => async dispatch => {
   try {
     const resp = await doJsonAuthRequest({
       url: CHANGE_USER_SETTINGS_URL,
       method: 'post',
-      data: { name, email, srcAvatar },
+      data: { name, email, srcAvatar }
     })
     dispatch({
       type: CHANGE_USER_SETTINGS,
-      payload: { name: resp.name, email: resp.email, srcAvatar },
+      payload: { name: resp.name, email: resp.email, srcAvatar }
     })
   } catch (e) {
     console.log('Error: ' + e)
