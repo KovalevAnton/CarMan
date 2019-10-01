@@ -13,7 +13,7 @@ import {
   UPLOAD_USER_PHOTO_END,
 } from '../constants/actions'
 // import RNFetchBlob from 'rn-fetch-blob'
-import { setAuth, doJsonRequest, doJsonAuthRequest, getFilenameForAndroid, getToken } from './helper'
+import { setAuth, doJsonRequest, doJsonAuthRequest, getToken } from './helper'
 import {
   AUTH_URL,
   AUTH_SOCIAL_URL,
@@ -23,12 +23,12 @@ import {
   CHANGE_USER_SETTINGS_URL,
   UPLOAD_URL,
 } from './endpoinds'
-import { AsyncStorage } from 'react-native'
+import { AsyncStorage, Platform } from 'react-native'
 import { AUTH } from '../constants/storage'
 import { goToMap, goToSignIn, goWelcome } from '../navigation/navigation'
 // import { AccessToken, LoginManager } from 'react-native-fbsdk';
 // import firebase from 'react-native-firebase';
-import { Platform } from 'react-native'
+// import {  } from 'react-native'
 // import Config from 'react-native-config'
 
 export const checkAuth = () => async dispatch => {
